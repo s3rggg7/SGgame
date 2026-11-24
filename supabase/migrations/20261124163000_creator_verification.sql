@@ -2,8 +2,14 @@ alter table public.sg_game_profiles
   add column if not exists creator_verified boolean not null default false;
 
 update public.sg_game_profiles
-set creator_verified = true
-where lower(nickname) = 's3rggg7';
+set creator_verified = coalesce(
+  (
+    select lower(auth.users.email) = 'sergeizagorodkin082@gmail.com'
+    from auth.users
+    where auth.users.id = sg_game_profiles.id
+  ),
+  false
+);
 
 create or replace function public.is_valid_sg_game_nickname(p_nickname text)
 returns boolean
@@ -18,7 +24,7 @@ begin
     return false;
   end if;
 
-  if v_nickname = any (array['admin', 'administrator', 'moderator', 'support', 'sggames', 's3rggg7']) then
+  if v_nickname = any (array['admin', 'administrator', 'moderator', 'support', 'sggames']) then
     return false;
   end if;
 
@@ -39,7 +45,13 @@ security definer
 set search_path = public, pg_temp
 as $$
 begin
-  new.creator_verified := lower(new.nickname) = 's3rggg7';
+  select exists (
+    select 1
+    from auth.users
+    where auth.users.id = new.id
+      and lower(auth.users.email) = 'sergeizagorodkin082@gmail.com'
+  )
+  into new.creator_verified;
   return new;
 end;
 $$;
