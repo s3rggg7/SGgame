@@ -68,8 +68,8 @@ function setPublicProfileMode(enabled) {
   if (avatarActions) avatarActions.hidden = enabled;
   if (summaryActions) summaryActions.hidden = enabled;
   if (nicknameForm) nicknameForm.hidden = enabled;
-  if (stats) stats.hidden = enabled;
-  if (cards) cards.hidden = enabled;
+  if (stats) stats.hidden = !enabled;
+  if (cards) cards.hidden = !enabled;
   if (profilePasswordStatus) profilePasswordStatus.hidden = enabled;
 
   if (enabled) {
@@ -138,6 +138,22 @@ async function loadPublicProfile(nickname) {
         profileAvatarStatus.textContent = "Не удалось загрузить аватар.";
       }
     }
+    if (Number.isSafeInteger(data.coins) && data.coins >= 0) {
+      profileCoins.textContent = data.coins.toLocaleString("ru-RU");
+    } else {
+      profileCoins.textContent = "0";
+    }
+    renderOwnedCards(
+      data.cards &&
+      typeof data.cards === "object" &&
+      !Array.isArray(data.cards)
+        ? data.cards
+        : {}
+    );
+    const cardsTitle = document.querySelector("#profile-cards-title");
+    if (cardsTitle) cardsTitle.textContent = "Собранные карточки";
+    const cardsCollectionLink = document.querySelector(".profile-cards .text-link");
+    if (cardsCollectionLink) cardsCollectionLink.hidden = true;
     profileStatus.textContent = "";
   } catch (error) {
     console.error("Не удалось загрузить публичный профиль.", error);

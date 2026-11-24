@@ -13,7 +13,9 @@ begin
   select jsonb_build_object(
     'nickname', nickname,
     'avatar_path', avatar_path,
-    'creator_verified', creator_verified
+    'creator_verified', creator_verified,
+    'coins', coins,
+    'cards', cards
   )
   into v_profile
   from public.sg_game_profiles

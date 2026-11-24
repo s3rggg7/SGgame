@@ -724,8 +724,6 @@ button { font: inherit; }
 .public-profile .profile-summary-actions,
 .public-profile .profile-nickname-form,
 .public-profile #profile-nickname-form,
-.public-profile .profile-stats,
-.public-profile .profile-cards,
 .public-profile #profile-password-status,
 .public-profile [hidden] { display: none !important; }
 .profile-password-status { min-height: 1.4em; margin: 8px 0 0; color: var(--muted); font-size: 13px; }
