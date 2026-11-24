@@ -130,7 +130,7 @@
     <div class="account-dialog-content">
       <p class="eyebrow">SG Games</p>
       <h2 id="account-dialog-title">Войди или создай аккаунт</h2>
-      <p class="account-intro">Аккаунт сохранит SG-баксы и карточки. Ник должен быть уникальным и не содержать оскорблений.</p>
+      <p class="account-intro">Для регистрации подтверди почту кодом из письма. Потом можно входить по паролю или коду из почты.</p>
       <form id="account-form">
         <label class="account-field" id="account-nickname-field" hidden>
           <span>Ник (3–16 символов)</span>
@@ -141,12 +141,19 @@
           <span>Электронная почта</span>
           <input id="account-form-email" name="email" type="email" autocomplete="email" required>
         </label>
-        <label class="account-field">
+        <label class="account-field" id="account-password-field">
           <span>Пароль</span>
           <input id="account-form-password" name="password" type="password" autocomplete="current-password" minlength="8" required>
         </label>
+        <label class="account-field" id="account-code-field" hidden>
+          <span>Код из письма</span>
+          <input id="account-form-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6">
+        </label>
         <button class="account-button account-submit" id="account-submit" type="submit">Войти</button>
         <button class="account-mode-toggle" id="account-mode-toggle" type="button">Создать аккаунт</button>
+        <button class="account-mode-toggle" id="account-code-login" type="button">Войти по коду из почты</button>
+        <button class="account-mode-toggle" id="account-code-resend" type="button" hidden>Отправить код ещё раз</button>
+        <button class="account-mode-toggle" id="account-code-back" type="button" hidden>Назад</button>
       </form>
       <p class="account-message" id="account-message" aria-live="polite"></p>
     </div>
@@ -163,6 +170,7 @@
   <script src="supabase-config.js"></script>
   <script src="header-account.js"></script>
   <script src="account-rules.js"></script>
+  <script src="account-auth.js"></script>
   <script src="profile.js"></script>
 </body>
 </html>

@@ -4,21 +4,17 @@ const cardDialog = document.querySelector("#card-dialog");
 const cardDialogContent = document.querySelector("#card-dialog-content");
 const collectionSort = document.querySelector(".collection-sort");
 const accountDialog = document.querySelector("#account-dialog");
-const accountForm = document.querySelector("#account-form");
 const accountMessage = document.querySelector("#account-message");
-const accountSubmit = document.querySelector("#account-submit");
-const accountModeToggle = document.querySelector("#account-mode-toggle");
 const accountOpenButton = document.querySelector("#account-open");
 const accountSignoutButton = document.querySelector("#account-signout");
 const accountEmail = document.querySelector("#account-email");
-const accountNicknameField = document.querySelector("#account-nickname-field");
-const accountNicknameInput = document.querySelector("#account-form-nickname");
 const supabaseClient = window.supabase && window.SG_SUPABASE_CONFIG
   ? window.supabase.createClient(
     window.SG_SUPABASE_CONFIG.url,
     window.SG_SUPABASE_CONFIG.publishableKey
   )
   : null;
+const accountAuth = window.SGAccountAuth.initialize(supabaseClient);
 
 if (collectionGrid && openChestButton) {
   const coinCount = document.querySelector("#coin-count");
@@ -56,7 +52,6 @@ if (collectionGrid && openChestButton) {
   let session = null;
   let profileReady = false;
   let pendingChestOpen = false;
-  let authMode = "signin";
 
   {
     let sortMode = "collection";
@@ -66,21 +61,8 @@ if (collectionGrid && openChestButton) {
       accountMessage.classList.toggle("is-error", isError);
     }
 
-    function setAuthMode(mode) {
-      authMode = mode;
-      accountSubmit.textContent = mode === "signup" ? "Создать аккаунт" : "Войти";
-      accountModeToggle.textContent = mode === "signup" ? "Уже есть аккаунт? Войти" : "Создать аккаунт";
-      document.querySelector("#account-form-password").autocomplete = mode === "signup" ? "new-password" : "current-password";
-      accountNicknameField.hidden = mode !== "signup";
-      accountNicknameInput.required = mode === "signup";
-      setAccountMessage("");
-    }
-
     function openAccountDialog(message = "Войди или создай аккаунт, чтобы открыть сундук.") {
-      setAuthMode("signin");
-      setAccountMessage(message);
-      if (!accountDialog.open) accountDialog.showModal();
-      document.querySelector("#account-form-email").focus();
+      accountAuth.open("signin", message);
     }
 
     function resetGuestCollection() {
@@ -535,9 +517,6 @@ if (collectionGrid && openChestButton) {
         accountSignoutButton.disabled = false;
       }
     });
-    accountModeToggle.addEventListener("click", () => {
-      setAuthMode(authMode === "signin" ? "signup" : "signin");
-    });
     document.querySelector("#account-dialog-close").addEventListener("click", () => {
       accountDialog.close();
       pendingChestOpen = false;
@@ -546,54 +525,6 @@ if (collectionGrid && openChestButton) {
       if (event.target === accountDialog) {
         accountDialog.close();
         pendingChestOpen = false;
-      }
-    });
-    accountForm.addEventListener("submit", async event => {
-      event.preventDefault();
-      if (!supabaseClient) {
-        setAccountMessage("Не удалось подключиться к сервису аккаунтов.", true);
-        return;
-      }
-
-      accountSubmit.disabled = true;
-      accountModeToggle.disabled = true;
-      setAccountMessage(authMode === "signup" ? "Создаю аккаунт..." : "Выполняю вход...");
-      const email = document.querySelector("#account-form-email").value.trim();
-      const password = document.querySelector("#account-form-password").value;
-      const nickname = window.SGAccountRules.normalizeNickname(accountNicknameInput.value);
-      if (authMode === "signup") {
-        const nicknameError = window.SGAccountRules.validateNickname(nickname);
-        if (nicknameError) {
-          setAccountMessage(nicknameError, true);
-          accountSubmit.disabled = false;
-          accountModeToggle.disabled = false;
-          return;
-        }
-      }
-      try {
-        const result = authMode === "signup"
-          ? await supabaseClient.auth.signUp({
-            email,
-            password,
-            options: {
-              data: { nickname },
-              emailRedirectTo: `${window.location.origin}${window.location.pathname}`
-            }
-          })
-          : await supabaseClient.auth.signInWithPassword({ email, password });
-        if (result.error) throw result.error;
-        if (authMode === "signup" && !result.data.session) {
-          accountForm.reset();
-          setAccountMessage("Проверь почту и подтверди адрес, затем войди в аккаунт.");
-        } else {
-          setAccountMessage("Вход выполнен. Загружаю коллекцию...");
-        }
-      } catch (error) {
-        console.error("Не удалось выполнить действие с аккаунтом.", error);
-        setAccountMessage(handleAuthError(error), true);
-      } finally {
-        accountSubmit.disabled = false;
-        accountModeToggle.disabled = false;
       }
     });
     openChestButton.addEventListener("click", openDailyChest);

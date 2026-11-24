@@ -688,6 +688,7 @@ button { font: inherit; }
 .account-intro { margin: 0 0 24px; color: var(--muted); font-size: 14px; line-height: 1.6; }
 #account-form { display: grid; gap: 14px; }
 #delete-account-form { display: grid; gap: 14px; }
+.account-mode-toggle[hidden], .account-field[hidden] { display: none; }
 .account-field { display: grid; gap: 7px; color: #d3d5d9; font-size: 13px; font-weight: 700; }
 .account-field input {
   min-height: 46px;

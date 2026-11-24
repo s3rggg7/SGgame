@@ -21,12 +21,6 @@ const profileNicknameForm = document.querySelector("#profile-nickname-form");
 const profileNicknameInput = document.querySelector("#profile-nickname-input");
 const profileNicknameMessage = document.querySelector("#profile-nickname-message");
 const accountDialog = document.querySelector("#account-dialog");
-const accountForm = document.querySelector("#account-form");
-const accountMessage = document.querySelector("#account-message");
-const accountSubmit = document.querySelector("#account-submit");
-const accountModeToggle = document.querySelector("#account-mode-toggle");
-const accountNicknameField = document.querySelector("#account-nickname-field");
-const accountNicknameInput = document.querySelector("#account-form-nickname");
 const deleteAccountDialog = document.querySelector("#delete-account-dialog");
 const deleteAccountForm = document.querySelector("#delete-account-form");
 const deleteAccountPassword = document.querySelector("#delete-account-password");
@@ -50,31 +44,14 @@ const profileCards = GAMES.flatMap(game => (game.collectibleCards ?? []).map(car
   coverMode: card.coverMode ?? game.coverMode ?? "cover"
 })));
 let session = null;
-let authMode = "signin";
 let currentAvatarPath = null;
 const avatarBucket = "sg-game-avatars";
 const maxAvatarSize = 2 * 1024 * 1024;
 const avatarMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
-
-function setAccountMessage(message, isError = false) {
-  accountMessage.textContent = message;
-  accountMessage.classList.toggle("is-error", isError);
-}
-
-function setAuthMode(mode) {
-  authMode = mode;
-  accountSubmit.textContent = mode === "signup" ? "Создать аккаунт" : "Войти";
-  accountModeToggle.textContent = mode === "signup" ? "Уже есть аккаунт? Войти" : "Создать аккаунт";
-  document.querySelector("#account-form-password").autocomplete = mode === "signup" ? "new-password" : "current-password";
-  accountNicknameField.hidden = mode !== "signup";
-  accountNicknameInput.required = mode === "signup";
-  setAccountMessage("");
-}
+const accountAuth = window.SGAccountAuth.initialize(supabaseClient);
 
 function openAccountDialog() {
-  setAuthMode("signin");
-  if (!accountDialog.open) accountDialog.showModal();
-  document.querySelector("#account-form-email").focus();
+  accountAuth.open("signin");
 }
 
 function renderOwnedCards(cards) {
@@ -493,61 +470,6 @@ profileNicknameForm.addEventListener("submit", async event => {
 document.querySelector("#account-dialog-close").addEventListener("click", () => accountDialog.close());
 accountDialog.addEventListener("click", event => {
   if (event.target === accountDialog) accountDialog.close();
-});
-accountModeToggle.addEventListener("click", () => {
-  setAuthMode(authMode === "signin" ? "signup" : "signin");
-});
-accountForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  if (!supabaseClient) {
-    setAccountMessage("Не удалось подключиться к сервису аккаунтов.", true);
-    return;
-  }
-
-  const email = document.querySelector("#account-form-email").value.trim();
-  const password = document.querySelector("#account-form-password").value;
-  const nickname = window.SGAccountRules.normalizeNickname(accountNicknameInput.value);
-  if (authMode === "signup") {
-    const nicknameError = window.SGAccountRules.validateNickname(nickname);
-    if (nicknameError) {
-      setAccountMessage(nicknameError, true);
-      return;
-    }
-  }
-
-  accountSubmit.disabled = true;
-  accountModeToggle.disabled = true;
-  setAccountMessage(authMode === "signup" ? "Создаю аккаунт..." : "Выполняю вход...");
-  try {
-    const result = authMode === "signup"
-      ? await supabaseClient.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { nickname },
-          emailRedirectTo: `${window.location.origin}${window.location.pathname}`
-        }
-      })
-      : await supabaseClient.auth.signInWithPassword({ email, password });
-    if (result.error) throw result.error;
-    if (authMode === "signup" && !result.data.session) {
-      accountForm.reset();
-      setAccountMessage("Проверь почту и подтверди адрес, затем войди в аккаунт.");
-    } else {
-      setAccountMessage("Вход выполнен. Загружаю профиль...");
-    }
-  } catch (error) {
-    console.error("Не удалось выполнить действие с аккаунтом.", error);
-    const message = /nickname_(taken|invalid)|duplicate key|unique constraint/i.test(error.message || "")
-      ? "Этот ник уже занят или не подходит. Попробуй другой."
-      : /database error saving new user/i.test(error.message || "")
-        ? "Не удалось создать аккаунт. Ник может быть занят или миграция профиля ещё не настроена."
-        : error.message || "Произошла ошибка. Попробуй ещё раз.";
-    setAccountMessage(message, true);
-  } finally {
-    accountSubmit.disabled = false;
-    accountModeToggle.disabled = false;
-  }
 });
 
 if (!supabaseClient) {
