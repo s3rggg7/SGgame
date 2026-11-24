@@ -46,22 +46,32 @@
 
     <section class="profile-content" id="profile-content" hidden>
       <div class="profile-summary">
-        <div class="profile-avatar" id="profile-avatar" aria-hidden="true"></div>
+        <div class="profile-avatar" id="profile-avatar" aria-hidden="true">
+          <span id="profile-avatar-letter"></span>
+          <img id="profile-avatar-image" alt="" hidden>
+        </div>
         <div class="profile-identity">
           <p class="eyebrow">Игрок</p>
           <h2 id="profile-nickname"></h2>
-          <p>Этот ник закреплён за аккаунтом.</p>
+          <p class="profile-subtitle">Ник можно менять, если новый свободен.</p>
+          <div class="profile-avatar-actions">
+            <input id="profile-avatar-input" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+            <button class="account-button" id="profile-avatar-choose" type="button">Добавить аватар</button>
+            <button class="account-button account-signout" id="profile-avatar-remove" type="button" hidden>Удалить</button>
+            <small>PNG, JPG или WebP, до 2 МБ</small>
+          </div>
+          <p class="profile-avatar-status" id="profile-avatar-status" aria-live="polite"></p>
         </div>
         <button class="account-button account-signout" id="profile-signout" type="button">Выйти</button>
       </div>
 
-      <form class="profile-claim" id="profile-nickname-form" hidden>
+      <form class="profile-claim" id="profile-nickname-form">
         <label class="account-field" for="profile-nickname-input">
-          <span>Выбери свой ник (3–16 символов)</span>
+          <span>Ник (3–16 символов)</span>
           <input id="profile-nickname-input" name="nickname" type="text" autocomplete="nickname" minlength="3" maxlength="16" pattern="[A-Za-zА-Яа-яЁё0-9_]{3,16}" required>
-          <small>Это можно сделать только один раз. Ник должен быть уникальным и без оскорблений.</small>
+          <small>Ник должен быть уникальным и без оскорблений.</small>
         </label>
-        <button class="account-button" type="submit">Закрепить ник</button>
+        <button class="account-button" type="submit">Сохранить ник</button>
         <p class="profile-claim-message" id="profile-nickname-message" aria-live="polite"></p>
       </form>
 

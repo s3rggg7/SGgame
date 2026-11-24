@@ -4,6 +4,12 @@ const profileOpenAccount = document.querySelector("#profile-open-account");
 const profileContent = document.querySelector("#profile-content");
 const profileStatus = document.querySelector("#profile-status");
 const profileAvatar = document.querySelector("#profile-avatar");
+const profileAvatarLetter = document.querySelector("#profile-avatar-letter");
+const profileAvatarImage = document.querySelector("#profile-avatar-image");
+const profileAvatarInput = document.querySelector("#profile-avatar-input");
+const profileAvatarChoose = document.querySelector("#profile-avatar-choose");
+const profileAvatarRemove = document.querySelector("#profile-avatar-remove");
+const profileAvatarStatus = document.querySelector("#profile-avatar-status");
 const profileNickname = document.querySelector("#profile-nickname");
 const profileCoins = document.querySelector("#profile-coins");
 const profileCardTotal = document.querySelector("#profile-card-total");
@@ -36,6 +42,10 @@ const profileCards = GAMES.flatMap(game => (game.collectibleCards ?? []).map(car
 })));
 let session = null;
 let authMode = "signin";
+let currentAvatarPath = null;
+const avatarBucket = "sg-game-avatars";
+const maxAvatarSize = 2 * 1024 * 1024;
+const avatarMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 function setAccountMessage(message, isError = false) {
   accountMessage.textContent = message;
@@ -86,6 +96,9 @@ async function loadProfile(nextSession) {
     profileGate.hidden = false;
     profileGateMessage.textContent = "Войди или создай аккаунт, чтобы увидеть ник, баланс и собранные карточки.";
     profileOpenAccount.hidden = false;
+    currentAvatarPath = null;
+    profileAvatarImage.removeAttribute("src");
+    profileAvatarStatus.textContent = "";
     return;
   }
 
@@ -97,7 +110,7 @@ async function loadProfile(nextSession) {
   try {
     const { data, error } = await supabaseClient
       .from("sg_game_profiles")
-      .select("nickname,nickname_claimed,coins,cards")
+      .select("nickname,coins,cards,avatar_path")
       .eq("id", nextSession.user.id)
       .single();
     if (error) throw error;
@@ -106,31 +119,55 @@ async function loadProfile(nextSession) {
     if (
       typeof data.nickname !== "string" ||
       !data.nickname ||
-      typeof data.nickname_claimed !== "boolean" ||
       !Number.isSafeInteger(data.coins) ||
       data.coins < 0 ||
       !data.cards ||
       typeof data.cards !== "object" ||
       Array.isArray(data.cards) ||
-      !Object.values(data.cards).every(count => Number.isSafeInteger(count) && count >= 0)
+      !Object.values(data.cards).every(count => Number.isSafeInteger(count) && count >= 0) ||
+      (data.avatar_path !== null && data.avatar_path !== `${nextSession.user.id}/avatar`)
     ) {
       throw new Error("Профиль содержит некорректные данные. Проверь миграции базы аккаунтов.");
     }
 
     profileNickname.textContent = data.nickname;
-    profileNicknameForm.hidden = data.nickname_claimed;
-    profileAvatar.textContent = Array.from(data.nickname)[0].toLocaleUpperCase("ru");
+    profileNicknameInput.value = data.nickname;
+    profileAvatarLetter.textContent = Array.from(data.nickname)[0].toLocaleUpperCase("ru");
+    profileAvatarLetter.hidden = false;
+    profileAvatarImage.hidden = true;
+    profileAvatarImage.removeAttribute("src");
     profileAvatar.style.setProperty("--avatar-hue", String(data.nickname.codePointAt(0) % 360));
     profileAvatar.setAttribute("aria-label", `Аватар ${data.nickname}`);
     profileCoins.textContent = data.coins.toLocaleString("ru-RU");
+    currentAvatarPath = data.avatar_path;
+    profileAvatarChoose.textContent = currentAvatarPath ? "Изменить аватар" : "Добавить аватар";
+    profileAvatarRemove.hidden = !currentAvatarPath;
+    profileAvatarStatus.textContent = "";
+    if (currentAvatarPath) {
+      try {
+        const { data: avatarData, error: avatarError } = await supabaseClient
+          .storage.from(avatarBucket)
+          .createSignedUrl(currentAvatarPath, 3600);
+        if (avatarError) throw avatarError;
+        if (session?.user.id !== nextSession.user.id) return;
+        profileAvatarImage.src = avatarData.signedUrl;
+        profileAvatarImage.hidden = false;
+        profileAvatarLetter.hidden = true;
+      } catch (avatarError) {
+        console.error("Не удалось загрузить аватар профиля.", avatarError);
+        profileAvatarStatus.textContent = "Не удалось загрузить аватар.";
+      }
+    }
     renderOwnedCards(data.cards);
     profileStatus.textContent = "";
     profileSignout.disabled = false;
     if (accountDialog.open) accountDialog.close();
+    return true;
   } catch (error) {
     console.error("Не удалось загрузить профиль.", error);
     profileStatus.textContent = "Не удалось загрузить профиль. Проверь подключение и выполни миграции базы аккаунтов.";
     profileSignout.disabled = false;
+    return false;
   }
 }
 
@@ -147,6 +184,106 @@ profileSignout.addEventListener("click", async () => {
   }
 });
 
+profileAvatarChoose.addEventListener("click", () => profileAvatarInput.click());
+profileAvatarInput.addEventListener("change", async () => {
+  const file = profileAvatarInput.files?.[0];
+  if (!file) return;
+  if (!avatarMimeTypes.has(file.type)) {
+    profileAvatarStatus.textContent = "Выбери изображение PNG, JPG или WebP.";
+    profileAvatarInput.value = "";
+    return;
+  }
+  if (file.size > maxAvatarSize) {
+    profileAvatarStatus.textContent = "Размер аватара не должен превышать 2 МБ.";
+    profileAvatarInput.value = "";
+    return;
+  }
+  if (!session) {
+    profileAvatarInput.value = "";
+    return;
+  }
+
+  const avatarPath = `${session.user.id}/avatar`;
+  profileAvatarChoose.disabled = true;
+  profileAvatarRemove.disabled = true;
+  profileAvatarStatus.textContent = "Загружаю аватар...";
+  let uploaded = false;
+  try {
+    const { error: uploadError } = await supabaseClient.storage
+      .from(avatarBucket)
+      .upload(avatarPath, file, {
+        cacheControl: "3600",
+        contentType: file.type,
+        upsert: true
+      });
+    if (uploadError) throw uploadError;
+    uploaded = true;
+
+    const { error: profileError } = await supabaseClient.rpc("set_sg_game_avatar", {
+      p_avatar_path: avatarPath
+    });
+    if (profileError) throw profileError;
+
+    currentAvatarPath = avatarPath;
+    const profileLoaded = await loadProfile(session);
+    profileAvatarStatus.textContent = profileLoaded
+      ? "Аватар обновлён."
+      : "Аватар сохранён, но профиль не обновился. Обнови страницу.";
+  } catch (error) {
+    console.error("Не удалось сохранить аватар.", error);
+    if (uploaded && !currentAvatarPath) {
+      try {
+        const { error: cleanupError } = await supabaseClient.storage
+          .from(avatarBucket)
+          .remove([avatarPath]);
+        if (cleanupError) console.error("Не удалось удалить несохранённый аватар.", cleanupError);
+      } catch (cleanupError) {
+        console.error("Не удалось удалить несохранённый аватар.", cleanupError);
+      }
+    }
+    profileAvatarStatus.textContent = /bucket|row.level security|policy|set_sg_game_avatar/i.test(error.message || "")
+      ? "Хранилище аватаров ещё не настроено. Выполни новую SQL-миграцию."
+      : "Не удалось сохранить аватар. Проверь подключение и попробуй снова.";
+  } finally {
+    profileAvatarInput.value = "";
+    profileAvatarChoose.disabled = false;
+    profileAvatarRemove.disabled = false;
+  }
+});
+
+profileAvatarRemove.addEventListener("click", async () => {
+  if (!session || !currentAvatarPath) return;
+
+  const avatarPath = currentAvatarPath;
+  profileAvatarChoose.disabled = true;
+  profileAvatarRemove.disabled = true;
+  profileAvatarStatus.textContent = "Удаляю аватар...";
+  try {
+    const { error: profileError } = await supabaseClient.rpc("set_sg_game_avatar", {
+      p_avatar_path: null
+    });
+    if (profileError) throw profileError;
+
+    currentAvatarPath = null;
+    await loadProfile(session);
+    const { error: removeError } = await supabaseClient.storage
+      .from(avatarBucket)
+      .remove([avatarPath]);
+    if (removeError) {
+      console.error("Аватар отвязан, но файл не удалось удалить.", removeError);
+      profileAvatarStatus.textContent = "Аватар удалён из профиля, но файл не удалось удалить из хранилища.";
+      return;
+    }
+    profileAvatarStatus.textContent = "Аватар удалён.";
+  } catch (error) {
+    console.error("Не удалось удалить аватар.", error);
+    profileAvatarStatus.textContent = "Не удалось удалить аватар. Проверь подключение и попробуй снова.";
+  } finally {
+    profileAvatarChoose.disabled = false;
+    profileAvatarRemove.disabled = false;
+  }
+});
+
 profileNicknameForm.addEventListener("submit", async event => {
   event.preventDefault();
   const nickname = window.SGAccountRules.normalizeNickname(profileNicknameInput.value);
@@ -160,22 +297,22 @@ profileNicknameForm.addEventListener("submit", async event => {
   const submitButton = profileNicknameForm.querySelector('button[type="submit"]');
   submitButton.disabled = true;
   profileNicknameMessage.classList.remove("is-error");
-  profileNicknameMessage.textContent = "Закрепляю ник...";
+  profileNicknameMessage.textContent = "Сохраняю ник...";
   try {
     const { error } = await supabaseClient.rpc("set_sg_game_nickname", { p_nickname: nickname });
     if (error) throw error;
-    await loadProfile(session);
-    if (profileNicknameForm.hidden) {
-      profileStatus.textContent = "Ник закреплён. Изменить его больше нельзя.";
+    const profileLoaded = await loadProfile(session);
+    if (profileLoaded && profileNickname.textContent === nickname) {
+      profileNicknameMessage.textContent = "Ник сохранён.";
     }
   } catch (error) {
-    console.error("Не удалось закрепить ник.", error);
+    console.error("Не удалось сохранить ник.", error);
     const messages = {
       nickname_taken: "Этот ник уже занят. Попробуй другой.",
       nickname_invalid: "Этот ник не подходит. Выбери другой.",
-      nickname_already_set: "Ник уже закреплён и не может быть изменён."
+      profile_not_found: "Профиль не найден. Попробуй выйти и войти снова."
     };
-    profileNicknameMessage.textContent = messages[error.message] || "Не удалось закрепить ник. Проверь подключение и попробуй снова.";
+    profileNicknameMessage.textContent = messages[error.message] || "Не удалось сохранить ник. Проверь подключение и попробуй снова.";
     profileNicknameMessage.classList.add("is-error");
   } finally {
     submitButton.disabled = false;
