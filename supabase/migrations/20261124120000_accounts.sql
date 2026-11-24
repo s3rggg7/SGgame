@@ -1,5 +1,5 @@
 create table if not exists public.sg_game_profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
+  id uuid primary key references auth.users(id),
   coins integer not null default 0 check (coins >= 0),
   cards jsonb not null default '{}'::jsonb check (jsonb_typeof(cards) = 'object'),
   last_chest jsonb,
@@ -10,12 +10,19 @@ alter table public.sg_game_profiles enable row level security;
 revoke all on public.sg_game_profiles from anon, authenticated;
 grant select on public.sg_game_profiles to authenticated;
 
-drop policy if exists "Players can read their own profile" on public.sg_game_profiles;
-create policy "Players can read their own profile"
-  on public.sg_game_profiles
-  for select
-  to authenticated
-  using (auth.uid() = id);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'sg_game_profiles'
+      and policyname = 'Players can read their own profile'
+  ) then
+    execute 'create policy "Players can read their own profile" on public.sg_game_profiles for select to authenticated using (auth.uid() = id)';
+  end if;
+end
+$$;
 
 create or replace function public.create_sg_game_profile()
 returns trigger
@@ -32,10 +39,19 @@ end;
 $$;
 
 revoke all on function public.create_sg_game_profile() from public, anon, authenticated;
-drop trigger if exists on_auth_user_created_sg_game_profile on auth.users;
-create trigger on_auth_user_created_sg_game_profile
-  after insert on auth.users
-  for each row execute function public.create_sg_game_profile();
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_trigger
+    where tgname = 'on_auth_user_created_sg_game_profile'
+      and tgrelid = 'auth.users'::regclass
+      and not tgisinternal
+  ) then
+    execute 'create trigger on_auth_user_created_sg_game_profile after insert on auth.users for each row execute function public.create_sg_game_profile()';
+  end if;
+end
+$$;
 
 insert into public.sg_game_profiles (id)
 select id from auth.users
