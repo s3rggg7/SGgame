@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520">
+  <rect width="400" height="520" rx="26" fill="#162b30"/>
+  <circle cx="200" cy="236" r="148" fill="#7fe0c0" opacity=".12"/>
+  <path d="M61 291q31-83 111-100m167 100q-31-83-111-100" fill="none" stroke="#68dbb9" stroke-width="12" stroke-linecap="round" stroke-dasharray="3 20"/>
+  <path d="M199 96c-21 28-62 67-62 109a62 62 0 0 0 124 0c0-42-41-81-62-109z" fill="#baf4d6" stroke="#0b171b" stroke-width="10"/>
+  <path d="M169 217q31 25 62 0" fill="none" stroke="#277f73" stroke-width="10" stroke-linecap="round"/>
+  <path d="m186 202 9 10 18-21" fill="none" stroke="#277f73" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M74 139h58m136 0h58M97 329h45m116 0h45" stroke="#c5f7df" stroke-width="7" stroke-linecap="round" opacity=".7"/>
+  <path d="M200 84v-22m-89 66-17-17m195 17 17-17" stroke="#baf4d6" stroke-width="7" stroke-linecap="round"/>
+  <text x="200" y="418" fill="#fff" font-family="Arial,sans-serif" font-size="29" font-weight="800" text-anchor="middle" letter-spacing="4">ТИХИЙ ВЫБОР</text>
+  <text x="200" y="459" fill="#84e3c2" font-family="Arial,sans-serif" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="3">ПРОЙТИ МИМО</text>
+  <text x="200" y="488" fill="#b9d8d0" font-family="Arial,sans-serif" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="3">STRIKE AND SHATTER</text>
+</svg>

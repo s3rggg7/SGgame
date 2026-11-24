@@ -47,34 +47,34 @@ const GAMES = [
     id: "strike-and-shatter",
     title: "Strike and Shatter",
     genre: "Arcade",
-    cover: "assets/strike-and-shatter-cover.svg",
+    cover: "assets/strike-and-shatter-cover.png",
     collectibleCards: [
       {
         rarity: "common",
-        name: "Первый удар",
-        description: "Каждое большое разрушение начинается с одного точного удара.",
-        cover: "assets/strike-and-shatter-impact.svg"
+        name: "После полуночи",
+        description: "Одинокий фонарь освещает бесконечную улицу и начало новой прогулки.",
+        cover: "assets/strike-and-shatter-midnight.svg"
       },
       {
         rarity: "rare",
-        name: "Кристальный страж",
-        description: "Хранитель кристаллов держит оборону, пока не разлетится на осколки.",
-        cover: "assets/strike-and-shatter-guardian.svg"
+        name: "Плейлист бродяги",
+        description: "Старый плеер задаёт ритм ночи — не сбивайся с музыки.",
+        cover: "assets/strike-and-shatter-playlist.svg"
       },
       {
         rarity: "legendary",
-        name: "Повелитель осколков",
-        description: "Легендарный боец превращает любой кристалл в сияющий дождь осколков.",
-        cover: "assets/strike-and-shatter-shattermaster.svg"
+        name: "Тихий выбор",
+        description: "Самая редкая победа — пройти мимо и никого не задеть.",
+        cover: "assets/strike-and-shatter-mercy.svg"
       }
     ],
     screenshots: [],
-    short: "Бей по кристаллам, разбивай преграды и собирай самые редкие осколки.",
-    description: "Strike and Shatter — аркадная игра о точных ударах и хрупких кристаллах. Разбивай препятствия, собирай осколки и открывай новых бойцов. Игра пока готовится к выходу.",
+    short: "Бесконечная пиксельная прогулка по ночному городу под музыку.",
+    description: "Strike and Shatter — бесконечная пиксельная аркада о ночном городе, музыке и выборе. Иди вперёд под плейлист, обходи прохожих и используй бутылку только чтобы разбивать предметы и преграды. Можно пройти мимо каждого человека и никого не задеть. Игра готовится к выходу.",
     features: [
-      "Аркадные испытания на точность",
-      "Кристаллические преграды и яркие осколки",
-      "Коллекция бойцов и наград"
+      "Бесконечные улицы в ретро-пиксельном стиле",
+      "Музыка и атмосферные ночные прогулки",
+      "Выбор пощадить прохожих и пройти без вреда для них"
     ]
   }
 ];

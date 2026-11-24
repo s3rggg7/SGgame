@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520">
+  <rect width="400" height="520" rx="26" fill="#1d2336"/>
+  <circle cx="200" cy="236" r="142" fill="#8c79cb" opacity=".14"/>
+  <path d="M91 169q0-24 25-24h168q25 0 25 24v145q0 24-25 24H116q-25 0-25-24z" fill="#49445f" stroke="#11121b" stroke-width="12"/>
+  <path d="M116 174h168v136H116z" fill="#242737" stroke="#9993b5" stroke-width="6"/>
+  <circle cx="200" cy="242" r="43" fill="#e1ae55" stroke="#11121b" stroke-width="9"/>
+  <circle cx="200" cy="242" r="13" fill="#262635"/>
+  <path d="M117 197h28m110 0h28M118 286h34m96 0h34" stroke="#a9a4c5" stroke-width="8" stroke-linecap="round"/>
+  <path d="M144 146v-21q0-58 56-58t56 58v21m-112 0v31m112-31v31" fill="none" stroke="#f0c77e" stroke-width="15"/>
+  <path d="M116 171q-28 0-28 30v28q0 28 28 28m168-86q28 0 28 30v28q0 28-28 28" fill="none" stroke="#f0c77e" stroke-width="14"/>
+  <path d="m58 118 16 21-16 21m284-42-16 21 16 21" fill="none" stroke="#97e9ef" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="200" y="421" fill="#fff" font-family="Arial,sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="3">ПЛЕЙЛИСТ</text>
+  <text x="200" y="457" fill="#f0c77e" font-family="Arial,sans-serif" font-size="22" font-weight="800" text-anchor="middle" letter-spacing="3">БРОДЯГИ</text>
+  <text x="200" y="488" fill="#b8b6cc" font-family="Arial,sans-serif" font-size="13" font-weight="700" text-anchor="middle" letter-spacing="4">STRIKE AND SHATTER</text>
+</svg>
