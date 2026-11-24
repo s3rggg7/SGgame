@@ -55,12 +55,14 @@ const publicNickname = new URLSearchParams(window.location.search).get("nickname
 const isPublicProfile = Boolean(publicNickname);
 
 function setPublicProfileMode(enabled) {
+  document.body.classList.toggle("public-profile", enabled);
   const subtitle = document.querySelector(".profile-subtitle");
   const avatarActions = document.querySelector(".profile-avatar-actions");
   const summaryActions = document.querySelector(".profile-summary-actions");
   const nicknameForm = document.querySelector("#profile-nickname-form");
   const stats = document.querySelector(".profile-stats");
   const cards = document.querySelector(".profile-cards");
+  const profilePasswordStatus = document.querySelector("#profile-password-status");
 
   if (subtitle) subtitle.textContent = enabled ? "Публичный профиль игрока" : "Ник можно менять, если новый свободен.";
   if (avatarActions) avatarActions.hidden = enabled;
@@ -68,6 +70,16 @@ function setPublicProfileMode(enabled) {
   if (nicknameForm) nicknameForm.hidden = enabled;
   if (stats) stats.hidden = enabled;
   if (cards) cards.hidden = enabled;
+  if (profilePasswordStatus) profilePasswordStatus.hidden = enabled;
+
+  if (enabled) {
+    profileAvatarChoose.disabled = true;
+    profileAvatarRemove.disabled = true;
+    profileNicknameInput.disabled = true;
+    profileSignout.disabled = true;
+    profilePasswordReset.disabled = true;
+    profileDeleteAccount.disabled = true;
+  }
 }
 
 async function loadPublicProfile(nickname) {

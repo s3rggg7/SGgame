@@ -720,6 +720,14 @@ button { font: inherit; }
 .profile-avatar { width: 82px; height: 82px; flex: 0 0 auto; display: grid; place-items: center; border: 3px solid rgba(255,255,255,.22); border-radius: 50%; background: hsl(var(--avatar-hue, 210) 42% 34%); color: #fff; font-size: 34px; font-weight: 800; box-shadow: 0 8px 24px rgba(0,0,0,.24); }
 .profile-avatar img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
 .profile-summary-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.public-profile .profile-avatar-actions,
+.public-profile .profile-summary-actions,
+.public-profile .profile-nickname-form,
+.public-profile #profile-nickname-form,
+.public-profile .profile-stats,
+.public-profile .profile-cards,
+.public-profile #profile-password-status,
+.public-profile [hidden] { display: none !important; }
 .profile-password-status { min-height: 1.4em; margin: 8px 0 0; color: var(--muted); font-size: 13px; }
 .profile-danger-button { border-color: rgba(255,112,112,.45); background: rgba(120,35,35,.18); color: #ffaaa3; }
 .profile-danger-button:hover:not(:disabled) { border-color: #ff8580; background: rgba(150,45,45,.28); color: #ffd1cd; }
