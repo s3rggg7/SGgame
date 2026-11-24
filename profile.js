@@ -64,7 +64,8 @@ function setPublicProfileMode(enabled) {
   const cards = document.querySelector(".profile-cards");
   const profilePasswordStatus = document.querySelector("#profile-password-status");
 
-  if (subtitle) subtitle.textContent = enabled ? "Публичный профиль игрока" : "Ник можно менять, если новый свободен.";
+  if (subtitle) subtitle.textContent = enabled ? "" : "Ник можно менять, если новый свободен.";
+  if (subtitle) subtitle.hidden = enabled;
   if (avatarActions) avatarActions.hidden = enabled;
   if (summaryActions) summaryActions.hidden = enabled;
   if (nicknameForm) nicknameForm.hidden = enabled;
@@ -128,7 +129,7 @@ async function loadPublicProfile(nickname) {
       const publicUrl = supabaseClient.storage
         .from(avatarBucket)
         .getPublicUrl(data.avatar_path).data.publicUrl;
-      profileAvatarImage.src = publicUrl;
+      profileAvatarImage.src = `${publicUrl}?v=${Date.now()}`;
       try {
         await profileAvatarImage.decode();
         profileAvatarImage.hidden = false;

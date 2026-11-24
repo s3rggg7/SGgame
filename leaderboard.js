@@ -14,9 +14,10 @@ document.querySelector("#year").textContent = new Date().getFullYear();
 
 function avatarUrl(player) {
   if (!player.avatar_path) return "";
-  return supabaseClient.storage
+  const url = supabaseClient.storage
     .from("sg-game-avatars")
     .getPublicUrl(player.avatar_path).data.publicUrl;
+  return `${url}?v=${player.card_count}`;
 }
 
 function creatorBadge() {

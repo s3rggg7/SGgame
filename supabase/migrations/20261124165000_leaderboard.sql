@@ -18,11 +18,11 @@ begin
         select sum((value)::integer)
         from jsonb_each_text(p.cards)
       ), 0)::integer as card_count,
-      row_number() over (
+      rank() over (
         order by coalesce((
           select sum((value)::integer)
           from jsonb_each_text(p.cards)
-        ), 0) desc, lower(p.nickname), p.id
+        ), 0) desc
       )::integer as position
     from public.sg_game_profiles p
   ),
