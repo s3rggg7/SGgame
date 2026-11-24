@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17191d">
+  <title>Топ лидеров — SG Games</title>
+  <meta name="description" content="Рейтинг игроков SG Games по собранным карточкам.">
+  <link rel="icon" type="image/png" href="assets/favicon.png?v=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="index.html" aria-label="SG Games — главная">
+      <img class="brand-mark" src="assets/logo.png?v=2" alt="" aria-hidden="true">
+      <span>SG Games</span>
+    </a>
+    <button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+    <nav class="nav" aria-label="Основная навигация">
+      <a href="index.html#games">Игры</a>
+      <a href="index.html#about">Об авторе</a>
+      <a href="collection.html">Коллекция</a>
+      <a class="active" href="leaderboard.html">Топ</a>
+      <a href="profile.html">Профиль</a>
+    </nav>
+    <a class="header-account" href="profile.html" aria-label="Открыть профиль">
+      <svg class="header-account-placeholder" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M4 21a8 8 0 0 1 16 0"></path>
+      </svg>
+      <span class="header-account-letter" aria-hidden="true" hidden></span>
+      <img class="header-account-image" alt="" hidden>
+    </a>
+  </header>
+
+  <main class="leaderboard-page">
+    <section class="leaderboard-heading">
+      <p class="eyebrow">Рейтинг игроков</p>
+      <h1>Топ лидеров</h1>
+      <p>Участники ранжируются по общему количеству собранных карточек.</p>
+    </section>
+
+    <div class="leaderboard-layout">
+      <section class="leaderboard-podium" aria-label="Три лучших игрока">
+        <div class="podium-grid" id="podium-grid"></div>
+      </section>
+
+      <section class="leaderboard-rankings" aria-labelledby="leaderboard-list-title">
+        <div class="leaderboard-list-heading">
+          <h2 id="leaderboard-list-title">ТОП-100</h2>
+          <span id="leaderboard-status" aria-live="polite">Загружаю рейтинг...</span>
+        </div>
+        <div class="leaderboard-list" id="leaderboard-list"></div>
+        <div class="leaderboard-my-place" id="leaderboard-my-place" hidden></div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="index.html"><img class="brand-mark" src="assets/logo.png?v=2" alt="" aria-hidden="true"><span>SG Games</span></a>
+    <p>© <span id="year"></span> s3rggg7</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="header-account.js"></script>
+  <script src="app.js"></script>
+  <script src="leaderboard.js"></script>
+</body>
+</html>
