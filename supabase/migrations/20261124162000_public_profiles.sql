@@ -12,7 +12,10 @@ declare
 begin
   select jsonb_build_object(
     'nickname', nickname,
-    'avatar_path', avatar_path,
+    'avatar_path', case
+      when avatar_moderation_status = 'approved' then avatar_path
+      else null
+    end,
     'creator_verified', creator_verified,
     'coins', coins,
     'cards', cards

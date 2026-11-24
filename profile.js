@@ -236,7 +236,7 @@ async function loadProfile(nextSession) {
   try {
     const { data, error } = await supabaseClient
       .from("sg_game_profiles")
-      .select("nickname,coins,cards,avatar_path,creator_verified")
+      .select("nickname,coins,cards,avatar_path,creator_verified,avatar_moderation_status")
       .eq("id", nextSession.user.id)
       .single();
     if (error) throw error;
@@ -277,9 +277,15 @@ async function loadProfile(nextSession) {
     profileAvatar.setAttribute("aria-label", `Аватар ${data.nickname}`);
     profileCoins.textContent = data.coins.toLocaleString("ru-RU");
     currentAvatarPath = data.avatar_path;
+    if (data.avatar_moderation_status === "pending") {
+      profileAvatarStatus.textContent = "Аватар отправлен на модерацию.";
+    } else if (data.avatar_moderation_status === "rejected") {
+      profileAvatarStatus.textContent = "Аватар отклонён модерацией.";
+    } else {
+      profileAvatarStatus.textContent = "";
+    }
     profileAvatarChoose.textContent = currentAvatarPath ? "Изменить аватар" : "Добавить аватар";
     profileAvatarRemove.hidden = !currentAvatarPath;
-    profileAvatarStatus.textContent = "";
     if (currentAvatarPath) {
       try {
         const avatarCache = window.SGAvatarCache;

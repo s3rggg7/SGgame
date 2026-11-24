@@ -14,6 +14,7 @@ begin
       p.nickname,
       p.avatar_path,
       p.creator_verified,
+      p.avatar_moderation_status,
       coalesce((
         select sum((value)::integer)
         from jsonb_each_text(p.cards)
@@ -55,7 +56,10 @@ begin
         jsonb_build_object(
           'id', id,
           'nickname', nickname,
-          'avatar_path', avatar_path,
+          'avatar_path', case
+            when avatar_moderation_status = 'approved' then avatar_path
+            else null
+          end,
           'creator_verified', creator_verified,
           'card_count', card_count,
           'position', position
