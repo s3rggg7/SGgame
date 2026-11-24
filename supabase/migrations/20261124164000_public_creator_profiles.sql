@@ -121,7 +121,7 @@ begin
         select sum((value)::integer)
         from jsonb_each_text(p.cards)
       ), 0)::integer as card_count,
-      rank() over (
+      dense_rank() over (
         order by coalesce((
           select sum((value)::integer)
           from jsonb_each_text(p.cards)

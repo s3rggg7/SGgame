@@ -807,6 +807,9 @@ button { font: inherit; }
 .podium-player.place-1 { min-height: 390px; order: 2; background: linear-gradient(180deg, rgba(240,199,126,.22), rgba(240,199,126,.06)); }
 .podium-player.place-2 { order: 1; }
 .podium-player.place-3 { order: 3; }
+.podium-player.podium-slot-0 { order: 1; }
+.podium-player.podium-slot-1 { order: 2; }
+.podium-player.podium-slot-2 { order: 3; }
 .podium-place { position: absolute; top: -18px; width: 38px; height: 38px; display: grid; place-items: center; border: 3px solid var(--surface); border-radius: 50%; background: #f0c77e; color: #24201a; font-size: 17px; font-weight: 900; }
 .podium-player.place-1 .podium-place { background: #ffe4a7; }
 .podium-player.place-2 .podium-place { background: #cdd4d7; }

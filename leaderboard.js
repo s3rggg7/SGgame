@@ -38,12 +38,17 @@ function playerProfileLink(player, content) {
 }
 
 function renderPodium(top) {
-  const order = [top[1], top[0], top[2]];
-  podiumGrid.innerHTML = order.map((player, index) => {
+  const visible = top.slice(0, 3);
+  const order = visible.length >= 3
+    ? [visible[1], visible[0], visible[2]]
+    : visible.length === 2
+      ? [null, visible[0], visible[1]]
+      : [null, visible[0], null];
+  podiumGrid.innerHTML = order.map((player, visualIndex) => {
     if (!player) return '<div></div>';
     const place = player.position;
     return `
-      <article class="podium-player place-${place}">
+      <article class="podium-player place-${place} podium-slot-${visualIndex}">
         <span class="podium-place">${place}</span>
         ${playerProfileLink(player, `
           ${playerAvatar(player, "podium-avatar")}
