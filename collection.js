@@ -100,7 +100,7 @@ if (collectionGrid && openChestButton) {
       try {
         ({ data, error } = await supabaseClient
           .from("sg_game_profiles")
-          .select("nickname,coins,cards,last_chest")
+          .select("nickname,coins,cards,last_chest,creator_verified")
           .eq("id", nextSession.user.id)
           .single());
       } catch (requestError) {
@@ -135,7 +135,18 @@ if (collectionGrid && openChestButton) {
         return;
       }
 
-      accountEmail.textContent = data.nickname;
+      accountEmail.replaceChildren(document.createTextNode(data.nickname));
+      if (data.creator_verified === true) {
+        const creatorBadge = document.createElement("span");
+        creatorBadge.className = "creator-badge";
+        creatorBadge.tabIndex = 0;
+        creatorBadge.setAttribute("role", "img");
+        creatorBadge.setAttribute("aria-label", "Этот человек является создателем SG Games");
+        creatorBadge.setAttribute("title", "Этот человек является создателем SG Games");
+        creatorBadge.setAttribute("data-tooltip", "Этот человек является создателем SG Games");
+        creatorBadge.textContent = "✓";
+        accountEmail.append(creatorBadge);
+      }
       collection = { coins: data.coins, cards: data.cards, lastChest: data.last_chest };
       profileReady = true;
       renderCards();

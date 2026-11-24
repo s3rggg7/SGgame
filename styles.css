@@ -308,7 +308,7 @@ button { font: inherit; }
   font-weight: 800;
 }
 .collection-account { display: flex; flex: 0 1 260px; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
-.account-email { max-width: 100%; overflow: hidden; color: var(--muted); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.account-email { max-width: 100%; display: inline-flex; align-items: center; gap: 7px; overflow: hidden; color: var(--muted); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
 .account-button {
   min-height: 42px;
   padding: 0 16px;
@@ -726,7 +726,49 @@ button { font: inherit; }
 .profile-summary-actions .profile-danger-button { padding-inline: 12px; }
 .profile-identity { min-width: 0; flex: 1 1 auto; }
 .profile-identity .eyebrow { margin: 0 0 4px; }
-.profile-identity h2 { margin: 0; overflow-wrap: anywhere; font-size: clamp(24px, 4vw, 36px); }
+.profile-identity h2 { display: flex; align-items: center; gap: 9px; margin: 0; overflow-wrap: anywhere; font-size: clamp(24px, 4vw, 36px); }
+.creator-badge {
+  position: relative;
+  width: 23px;
+  height: 23px;
+  flex: 0 0 23px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f0c77e;
+  color: #24201a;
+  font-size: 14px;
+  line-height: 1;
+  cursor: help;
+}
+.creator-badge::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  width: max-content;
+  max-width: 260px;
+  transform: translate(-50%, 4px);
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #17191d;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease, visibility .15s ease;
+  z-index: 20;
+}
+.creator-badge:hover::after,
+.creator-badge:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
 .profile-identity .profile-subtitle { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
 .profile-avatar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
 .profile-avatar-actions .account-button { padding: 8px 12px; font-size: 13px; }

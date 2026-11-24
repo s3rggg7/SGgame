@@ -123,7 +123,7 @@ async function loadProfile(nextSession) {
   try {
     const { data, error } = await supabaseClient
       .from("sg_game_profiles")
-      .select("nickname,coins,cards,avatar_path")
+      .select("nickname,coins,cards,avatar_path,creator_verified")
       .eq("id", nextSession.user.id)
       .single();
     if (error) throw error;
@@ -143,7 +143,18 @@ async function loadProfile(nextSession) {
       throw new Error("Профиль содержит некорректные данные. Проверь миграции базы аккаунтов.");
     }
 
-    profileNickname.textContent = data.nickname;
+    profileNickname.replaceChildren(document.createTextNode(data.nickname));
+    if (data.creator_verified === true) {
+      const creatorBadge = document.createElement("span");
+      creatorBadge.className = "creator-badge";
+      creatorBadge.tabIndex = 0;
+      creatorBadge.setAttribute("role", "img");
+      creatorBadge.setAttribute("aria-label", "Этот человек является создателем SG Games");
+      creatorBadge.setAttribute("title", "Этот человек является создателем SG Games");
+      creatorBadge.setAttribute("data-tooltip", "Этот человек является создателем SG Games");
+      creatorBadge.textContent = "✓";
+      profileNickname.append(creatorBadge);
+    }
     profileNicknameInput.value = data.nickname;
     profileAvatarLetter.textContent = Array.from(data.nickname)[0].toLocaleUpperCase("ru");
     profileAvatarLetter.hidden = Boolean(data.avatar_path);
