@@ -2,29 +2,53 @@ const grid = document.querySelector("#game-grid");
 
 const homeCoinCount = document.querySelector("#home-coin-count");
 if (homeCoinCount) {
-  const storageKey = "sg-games-card-collection";
-  const updateHomeBalance = () => {
+  const supabaseClient = window.supabase && window.SG_SUPABASE_CONFIG
+    ? window.supabase.createClient(
+      window.SG_SUPABASE_CONFIG.url,
+      window.SG_SUPABASE_CONFIG.publishableKey
+    )
+    : null;
+  let latestBalanceRequest = 0;
+
+  async function updateHomeBalance() {
+    const requestId = ++latestBalanceRequest;
     try {
-      const saved = localStorage.getItem(storageKey);
-      if (!saved) {
+      if (!supabaseClient) throw new Error("Сервис аккаунтов не настроен.");
+      const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (requestId !== latestBalanceRequest) return;
+
+      if (!sessionData.session) {
         homeCoinCount.textContent = "0";
         return;
       }
 
-      const collection = JSON.parse(saved);
-      if (!Number.isSafeInteger(collection?.coins) || collection.coins < 0) {
-        throw new Error("Сохранённый баланс SG-баксов имеет неверный формат.");
+      const { data: profile, error: profileError } = await supabaseClient
+        .from("sg_game_profiles")
+        .select("coins")
+        .eq("id", sessionData.session.user.id)
+        .single();
+      if (profileError) throw profileError;
+      if (requestId !== latestBalanceRequest) return;
+      if (!Number.isSafeInteger(profile.coins) || profile.coins < 0) {
+        throw new Error("В профиле аккаунта обнаружен неверный баланс SG-баксов.");
       }
-      homeCoinCount.textContent = collection.coins.toLocaleString("ru-RU");
+
+      homeCoinCount.textContent = profile.coins.toLocaleString("ru-RU");
     } catch (error) {
+      if (requestId !== latestBalanceRequest) return;
       console.error("Не удалось загрузить баланс SG-баксов.", error);
       homeCoinCount.textContent = "—";
     }
-  };
+  }
 
   updateHomeBalance();
-  window.addEventListener("storage", event => {
-    if (event.key === storageKey || event.key === null) updateHomeBalance();
+  supabaseClient?.auth.onAuthStateChange(() => {
+    window.setTimeout(updateHomeBalance, 0);
+  });
+  window.addEventListener("focus", updateHomeBalance);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") updateHomeBalance();
   });
 }
 
