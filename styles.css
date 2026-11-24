@@ -1038,19 +1038,50 @@ footer {
   .profile-claim { grid-template-columns: 1fr; }
   .profile-claim .account-field, .profile-claim-message { grid-column: auto; }
   .profile-stats > div { min-width: 140px; flex: 1 1 140px; padding: 14px; }
-  .leaderboard-page { padding: 52px 20px 70px; }
-  .leaderboard-layout { grid-template-columns: 1fr; }
-  .leaderboard-podium { min-height: 430px; }
-  .podium-grid { padding-inline: 8px; gap: 6px; }
-  .podium-player { min-height: 250px; padding-inline: 4px; }
-  .podium-player.place-1 { min-height: 320px; }
-  .podium-avatar { width: 64px; height: 64px; flex-basis: 64px; }
-  .place-1 .podium-avatar { width: 78px; height: 78px; flex-basis: 78px; }
-  .podium-name { font-size: 12px; }
-  .leaderboard-list { max-height: 480px; }
-  .leaderboard-row { grid-template-columns: 32px minmax(0, 1fr) 58px; padding-inline: 10px; }
-  .leaderboard-my-place { grid-template-columns: 68px minmax(0, 1fr) 38px; }
-  .leaderboard-my-place > span:last-child { grid-column: 2 / -1; text-align: right; }
+  .leaderboard-page { width: 100%; padding: 42px 14px 60px; }
+  .leaderboard-heading { margin-bottom: 20px; padding-inline: 4px; }
+  .leaderboard-heading h1 { font-size: clamp(38px, 12vw, 56px); }
+  .leaderboard-heading > p:last-child { font-size: 14px; }
+  .leaderboard-layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .leaderboard-podium,
+  .leaderboard-rankings { border-radius: 16px; }
+  .leaderboard-podium { min-height: 330px; }
+  .podium-grid { gap: 5px; padding: 30px 7px 0; }
+  .podium-player { min-height: 210px; padding: 20px 3px 10px; border-radius: 13px 13px 0 0; }
+  .podium-player.place-1 { min-height: 270px; }
+  .podium-place { top: -15px; width: 32px; height: 32px; border-width: 2px; font-size: 14px; }
+  .podium-player .leaderboard-player-link { gap: 7px; }
+  .podium-avatar { width: 55px; height: 55px; flex-basis: 55px; border-width: 2px; }
+  .place-1 .podium-avatar { width: 68px; height: 68px; flex-basis: 68px; }
+  .podium-name { max-width: 92px; gap: 3px; font-size: 11px; line-height: 1.2; }
+  .podium-name .creator-badge { display: none; }
+  .podium-player > strong { font-size: 15px; }
+  .podium-player > strong small { font-size: 9px; }
+  .leaderboard-list-heading { min-height: 58px; padding-inline: 12px; }
+  .leaderboard-list-heading h2 { font-size: 16px; }
+  .leaderboard-list-heading span { max-width: 150px; text-align: right; }
+  .leaderboard-list { max-height: 420px; }
+  .leaderboard-row {
+    min-height: 68px;
+    grid-template-columns: 28px minmax(0, 1fr) 64px;
+    gap: 7px;
+    padding: 8px;
+  }
+  .leaderboard-avatar { width: 42px; height: 42px; flex-basis: 42px; }
+  .leaderboard-row .leaderboard-player-link { gap: 8px; }
+  .leaderboard-name { max-width: 155px; font-size: 13px; }
+  .leaderboard-name .creator-badge { width: 16px; height: 16px; flex-basis: 16px; font-size: 10px; }
+  .leaderboard-card-count { font-size: 14px; }
+  .leaderboard-my-place {
+    min-height: 82px;
+    grid-template-columns: 58px minmax(0, 1fr) 42px;
+    gap: 7px;
+    padding: 9px 8px;
+  }
+  .leaderboard-my-place .leaderboard-avatar { width: 38px; height: 38px; flex-basis: 38px; }
+  .leaderboard-my-place .leaderboard-player-link { gap: 7px; }
+  .leaderboard-my-place strong { max-width: 115px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .leaderboard-my-place > span:last-child { grid-column: 2 / -1; margin-top: 2px; text-align: right; }
   .catalog { padding: 54px 20px 70px; }
   .catalog-head { align-items: stretch; flex-direction: column; gap: 20px; }
   .catalog-controls { justify-content: flex-start; }
