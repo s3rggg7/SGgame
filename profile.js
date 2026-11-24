@@ -52,6 +52,7 @@ const maxAvatarSize = 2 * 1024 * 1024;
 const avatarMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const accountAuth = window.SGAccountAuth.initialize(supabaseClient);
 const publicNickname = new URLSearchParams(window.location.search).get("nickname")?.trim();
+const isPublicProfile = Boolean(publicNickname);
 
 function setPublicProfileMode(enabled) {
   const subtitle = document.querySelector(".profile-subtitle");
@@ -306,8 +307,12 @@ async function loadProfile(nextSession) {
   }
 }
 
-profileOpenAccount.addEventListener("click", openAccountDialog);
+profileOpenAccount.addEventListener("click", () => {
+  if (isPublicProfile) return;
+  openAccountDialog();
+});
 profileSignout.addEventListener("click", async () => {
+  if (isPublicProfile) return;
   profileSignout.disabled = true;
   try {
     const { error } = await supabaseClient.auth.signOut();
@@ -320,6 +325,7 @@ profileSignout.addEventListener("click", async () => {
 });
 
 profilePasswordReset.addEventListener("click", async () => {
+  if (isPublicProfile) return;
   if (!session?.user.email) {
     profilePasswordStatus.textContent = "Не удалось определить почту аккаунта. Выйди и войди снова.";
     return;
@@ -346,6 +352,7 @@ function closeDeleteAccountDialog() {
 }
 
 profileDeleteAccount.addEventListener("click", () => {
+  if (isPublicProfile) return;
   deleteAccountForm.reset();
   deleteAccountMessage.textContent = "";
   deleteAccountMessage.classList.remove("is-error");
@@ -367,6 +374,7 @@ deleteAccountDialog.addEventListener("close", () => {
 });
 deleteAccountForm.addEventListener("submit", async event => {
   event.preventDefault();
+  if (isPublicProfile) return;
   if (!session?.user.email) {
     deleteAccountMessage.textContent = "Не удалось определить почту аккаунта. Выйди и войди снова.";
     deleteAccountMessage.classList.add("is-error");
@@ -440,8 +448,14 @@ deleteAccountForm.addEventListener("submit", async event => {
   }
 });
 
-profileAvatarChoose.addEventListener("click", () => profileAvatarInput.click());
+profileAvatarChoose.addEventListener("click", () => {
+  if (!isPublicProfile) profileAvatarInput.click();
+});
 profileAvatarInput.addEventListener("change", async () => {
+  if (isPublicProfile) {
+    profileAvatarInput.value = "";
+    return;
+  }
   const file = profileAvatarInput.files?.[0];
   if (!file) return;
   if (!avatarMimeTypes.has(file.type)) {
@@ -513,6 +527,7 @@ profileAvatarInput.addEventListener("change", async () => {
 });
 
 profileAvatarRemove.addEventListener("click", async () => {
+  if (isPublicProfile) return;
   if (!session || !currentAvatarPath) return;
 
   const avatarPath = currentAvatarPath;
@@ -549,6 +564,7 @@ profileAvatarRemove.addEventListener("click", async () => {
 
 profileNicknameForm.addEventListener("submit", async event => {
   event.preventDefault();
+  if (isPublicProfile) return;
   const nickname = window.SGAccountRules.normalizeNickname(profileNicknameInput.value);
   const validationMessage = window.SGAccountRules.validateNickname(nickname);
   if (validationMessage) {

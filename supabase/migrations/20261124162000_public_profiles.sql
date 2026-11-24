@@ -1,3 +1,6 @@
+alter table public.sg_game_profiles
+  add column if not exists creator_verified boolean not null default false;
+
 create or replace function public.get_sg_game_public_profile(p_nickname text)
 returns jsonb
 language plpgsql
@@ -8,7 +11,6 @@ declare
   v_profile jsonb;
 begin
   select jsonb_build_object(
-    'id', id,
     'nickname', nickname,
     'avatar_path', avatar_path,
     'creator_verified', creator_verified
@@ -28,6 +30,4 @@ grant execute on function public.get_sg_game_public_profile(text) to anon, authe
 update storage.buckets
 set public = true
 where id = 'sg-game-avatars';
-alter table public.sg_game_profiles
-  add column if not exists creator_verified boolean not null default false;
 
