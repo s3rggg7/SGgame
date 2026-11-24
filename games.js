@@ -51,21 +51,21 @@ const GAMES = [
     collectibleCards: [
       {
         rarity: "common",
-        name: "Ночная встреча",
-        description: "Бандит встречает прохожего в пустом ночном городе.",
-        cover: "assets/strike-and-shatter-encounter.svg"
+        name: "Первая кровь",
+        description: "Первая победа в ночном городе.",
+        cover: "assets/strike-and-shatter-first-blood.png"
       },
       {
         rarity: "rare",
-        name: "Цепь последствий",
-        description: "Каждый поступок меняет путь героя. Ещё можно остановиться и пощадить.",
-        cover: "assets/strike-and-shatter-consequences.svg"
+        name: "Серия убийств",
+        description: "Несколько побед подряд.",
+        cover: "assets/strike-and-shatter-kill-streak.png"
       },
       {
         rarity: "legendary",
-        name: "Точка невозврата",
-        description: "Мрачное напоминание: у решений бывают тяжёлые последствия.",
-        cover: "assets/strike-and-shatter-no-return.svg"
+        name: "Геноцид",
+        description: "Легендарное достижение в Strike and Shatter.",
+        cover: "assets/strike-and-shatter-genocide.png"
       }
     ],
     screenshots: [],
