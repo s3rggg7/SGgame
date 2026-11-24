@@ -51,6 +51,89 @@ const avatarBucket = "sg-game-avatars";
 const maxAvatarSize = 2 * 1024 * 1024;
 const avatarMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const accountAuth = window.SGAccountAuth.initialize(supabaseClient);
+const publicNickname = new URLSearchParams(window.location.search).get("nickname")?.trim();
+
+function setPublicProfileMode(enabled) {
+  const subtitle = document.querySelector(".profile-subtitle");
+  const avatarActions = document.querySelector(".profile-avatar-actions");
+  const summaryActions = document.querySelector(".profile-summary-actions");
+  const nicknameForm = document.querySelector("#profile-nickname-form");
+  const stats = document.querySelector(".profile-stats");
+  const cards = document.querySelector(".profile-cards");
+
+  if (subtitle) subtitle.textContent = enabled ? "Публичный профиль игрока" : "Ник можно менять, если новый свободен.";
+  if (avatarActions) avatarActions.hidden = enabled;
+  if (summaryActions) summaryActions.hidden = enabled;
+  if (nicknameForm) nicknameForm.hidden = enabled;
+  if (stats) stats.hidden = enabled;
+  if (cards) cards.hidden = enabled;
+}
+
+async function loadPublicProfile(nickname) {
+  session = null;
+  setPublicProfileMode(true);
+  profileGate.hidden = true;
+  profileContent.hidden = false;
+  profileStatus.textContent = "Загружаю профиль...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc("get_sg_game_public_profile", {
+      p_nickname: nickname
+    });
+    if (error) throw error;
+    if (!data) {
+      profileContent.hidden = true;
+      profileGate.hidden = false;
+      profileGateMessage.textContent = "Профиль с таким ником не найден.";
+      profileOpenAccount.hidden = true;
+      profileStatus.textContent = "";
+      return;
+    }
+
+    profileNickname.replaceChildren(document.createTextNode(data.nickname));
+    if (data.creator_verified === true) {
+      const creatorBadge = document.createElement("span");
+      creatorBadge.className = "creator-badge";
+      creatorBadge.tabIndex = 0;
+      creatorBadge.setAttribute("role", "img");
+      creatorBadge.setAttribute("aria-label", "Этот человек является создателем SG Games");
+      creatorBadge.setAttribute("title", "Этот человек является создателем SG Games");
+      creatorBadge.setAttribute("data-tooltip", "Этот человек является создателем SG Games");
+      creatorBadge.textContent = "✓";
+      profileNickname.append(creatorBadge);
+    }
+
+    profileAvatarLetter.textContent = Array.from(data.nickname)[0].toLocaleUpperCase("ru");
+    profileAvatarLetter.hidden = Boolean(data.avatar_path);
+    profileAvatarImage.hidden = true;
+    profileAvatarImage.removeAttribute("src");
+    profileAvatar.style.setProperty("--avatar-hue", String(data.nickname.codePointAt(0) % 360));
+    profileAvatar.setAttribute("aria-label", `Аватар ${data.nickname}`);
+    currentAvatarPath = data.avatar_path;
+
+    if (data.avatar_path) {
+      const publicUrl = supabaseClient.storage
+        .from(avatarBucket)
+        .getPublicUrl(data.avatar_path).data.publicUrl;
+      profileAvatarImage.src = publicUrl;
+      try {
+        await profileAvatarImage.decode();
+        profileAvatarImage.hidden = false;
+        profileAvatarLetter.hidden = true;
+      } catch (error) {
+        profileAvatarLetter.hidden = false;
+        profileAvatarStatus.textContent = "Не удалось загрузить аватар.";
+      }
+    }
+    profileStatus.textContent = "";
+  } catch (error) {
+    console.error("Не удалось загрузить публичный профиль.", error);
+    profileContent.hidden = true;
+    profileGate.hidden = false;
+    profileGateMessage.textContent = "Не удалось загрузить публичный профиль. Выполни миграцию публичных профилей.";
+    profileOpenAccount.hidden = true;
+  }
+}
 
 function openAccountDialog() {
   accountAuth.open("signin");
@@ -507,6 +590,8 @@ accountDialog.addEventListener("click", event => {
 if (!supabaseClient) {
   profileGateMessage.textContent = "Сервис аккаунтов ещё не настроен.";
   profileOpenAccount.disabled = true;
+} else if (publicNickname) {
+  loadPublicProfile(publicNickname);
 } else {
   supabaseClient.auth.onAuthStateChange((_event, nextSession) => {
     window.setTimeout(() => loadProfile(nextSession), 0);
