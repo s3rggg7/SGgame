@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520">
+  <rect width="400" height="520" rx="26" fill="#19212d"/>
+  <path d="M66 144h268v210H66z" fill="#806044" stroke="#10151c" stroke-width="12"/>
+  <path d="M66 210h268M66 280h268M155 144v66m90 0v70m-90 0v74m90-8v8" stroke="#4d3b31" stroke-width="10"/>
+  <path d="m199 165 17 64-47 34 52 24-22 61m-42-125-30 20m108-68 39 15" fill="none" stroke="#ffd277" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m119 390-19 20m187-24 22 17m-130-15-6 28m69-38 12 27" stroke="#d9a85d" stroke-width="10" stroke-linecap="round"/>
+  <text x="200" y="445" fill="#fff2d6" font-family="Arial,sans-serif" font-size="29" font-weight="800" text-anchor="middle" letter-spacing="3">ПЕРВЫЙ ПРОЛОМ</text>
+  <text x="200" y="482" fill="#e1ae67" font-family="Arial,sans-serif" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="4">STRIKE AND SHATTER</text>
+</svg>
