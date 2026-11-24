@@ -16,14 +16,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
+    outputs:
+      page_url: ${{ steps.configure-pages.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
+      - id: configure-pages
+        uses: actions/configure-pages@v5
       - run: |
           mkdir -p _site
           cp *.html *.css *.js _site/
@@ -31,5 +31,16 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site/
-      - id: deployment
-        uses: actions/deploy-pages@v4
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ needs.build.outputs.page_url }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/deploy-pages@v4
