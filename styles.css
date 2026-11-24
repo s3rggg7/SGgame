@@ -677,6 +677,7 @@ button { font: inherit; }
   color: var(--text);
   font: inherit;
 }
+.account-field small { color: var(--muted); font-size: 11px; font-weight: 500; line-height: 1.5; }
 .account-field input:focus { border-color: #f0c77e; box-shadow: 0 0 0 3px rgba(240, 199, 126, .12); }
 .account-submit { min-height: 48px; margin-top: 5px; background: #f0c77e; color: #24201a; }
 .account-submit:hover:not(:disabled) { background: #ffda98; }
@@ -684,6 +685,33 @@ button { font: inherit; }
 .account-mode-toggle:disabled { cursor: wait; opacity: .6; }
 .account-message { min-height: 1.4em; margin: 14px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .account-message.is-error { color: #ff9a91; }
+.profile-page { max-width: 1280px; min-height: calc(100vh - 200px); margin: 0 auto; padding: 72px clamp(24px, 6vw, 88px) 90px; }
+.profile-heading { margin-bottom: 30px; }
+.profile-heading h1 { margin: 8px 0 0; font-size: clamp(42px, 7vw, 76px); line-height: .98; letter-spacing: -.065em; }
+.profile-gate { padding: clamp(24px, 5vw, 48px); border: 1px solid var(--line); border-radius: 20px; background: var(--surface); }
+.profile-gate h2 { margin: 0 0 10px; font-size: clamp(22px, 3vw, 30px); }
+.profile-gate p { margin: 0 0 20px; color: var(--muted); line-height: 1.6; }
+.profile-summary { display: flex; align-items: center; gap: 20px; padding: 24px; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); }
+.profile-avatar { width: 82px; height: 82px; flex: 0 0 auto; display: grid; place-items: center; border: 3px solid rgba(255,255,255,.22); border-radius: 50%; background: hsl(var(--avatar-hue, 210) 42% 34%); color: #fff; font-size: 34px; font-weight: 800; box-shadow: 0 8px 24px rgba(0,0,0,.24); }
+.profile-identity { min-width: 0; flex: 1 1 auto; }
+.profile-identity .eyebrow { margin: 0 0 4px; }
+.profile-identity h2 { margin: 0; overflow-wrap: anywhere; font-size: clamp(24px, 4vw, 36px); }
+.profile-identity p:last-child { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+.profile-claim { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 12px; margin-top: 16px; padding: 18px; border: 1px solid rgba(240,199,126,.25); border-radius: 14px; background: rgba(240,199,126,.05); }
+.profile-claim .account-field { grid-column: 1 / -1; }
+.profile-claim-message { grid-column: 1 / -1; min-height: 1.4em; margin: 0; color: var(--muted); font-size: 13px; }
+.profile-claim-message.is-error { color: #ff9a91; }
+.profile-stats { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+.profile-stats > div { min-width: 180px; display: grid; gap: 5px; padding: 16px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.profile-stats span { color: var(--muted); font-size: 12px; }
+.profile-stats strong { color: #f0c77e; font-size: 22px; }
+.profile-status { min-height: 1.4em; color: var(--muted); font-size: 13px; }
+.profile-cards { margin-top: 40px; }
+.profile-cards .collection-heading { margin-bottom: 18px; }
+.profile-card-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.profile-card-grid .collectible-card { cursor: default; }
+.profile-card-grid .collectible-card:hover { transform: none; }
+.profile-card-empty { padding: 22px; border: 1px dashed var(--line); border-radius: 14px; color: var(--muted); line-height: 1.6; }
 .card-dialog-close {
   position: absolute;
   z-index: 1;
@@ -878,6 +906,13 @@ footer {
   .card-detail-art { min-height: 220px; max-height: 320px; }
   .card-detail-copy { padding: 26px 22px 28px; }
   .account-dialog-content { padding: 30px 22px; }
+  .profile-page { padding: 52px 20px 70px; }
+  .profile-summary { flex-wrap: wrap; padding: 18px; }
+  .profile-avatar { width: 68px; height: 68px; font-size: 28px; }
+  .profile-summary .account-button { margin-left: auto; }
+  .profile-claim { grid-template-columns: 1fr; }
+  .profile-claim .account-field, .profile-claim-message { grid-column: auto; }
+  .profile-stats > div { min-width: 140px; flex: 1 1 140px; padding: 14px; }
   .catalog { padding: 54px 20px 70px; }
   .catalog-head { align-items: stretch; flex-direction: column; gap: 20px; }
   .catalog-controls { justify-content: flex-start; }

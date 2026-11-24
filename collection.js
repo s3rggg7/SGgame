@@ -11,6 +11,8 @@ const accountModeToggle = document.querySelector("#account-mode-toggle");
 const accountOpenButton = document.querySelector("#account-open");
 const accountSignoutButton = document.querySelector("#account-signout");
 const accountEmail = document.querySelector("#account-email");
+const accountNicknameField = document.querySelector("#account-nickname-field");
+const accountNicknameInput = document.querySelector("#account-form-nickname");
 const supabaseClient = window.supabase && window.SG_SUPABASE_CONFIG
   ? window.supabase.createClient(
     window.SG_SUPABASE_CONFIG.url,
@@ -69,6 +71,8 @@ if (collectionGrid && openChestButton) {
       accountSubmit.textContent = mode === "signup" ? "Создать аккаунт" : "Войти";
       accountModeToggle.textContent = mode === "signup" ? "Уже есть аккаунт? Войти" : "Создать аккаунт";
       document.querySelector("#account-form-password").autocomplete = mode === "signup" ? "new-password" : "current-password";
+      accountNicknameField.hidden = mode !== "signup";
+      accountNicknameInput.required = mode === "signup";
       setAccountMessage("");
     }
 
@@ -93,7 +97,7 @@ if (collectionGrid && openChestButton) {
     async function loadAccountCollection(nextSession) {
       session = nextSession;
       profileReady = false;
-      accountEmail.textContent = nextSession?.user.email ?? "Гость";
+      accountEmail.textContent = nextSession ? "Загрузка профиля..." : "Гость";
       accountOpenButton.hidden = Boolean(nextSession);
       accountSignoutButton.hidden = !nextSession;
 
@@ -114,7 +118,7 @@ if (collectionGrid && openChestButton) {
       try {
         ({ data, error } = await supabaseClient
           .from("sg_game_profiles")
-          .select("coins,cards,last_chest")
+          .select("nickname,coins,cards,last_chest")
           .eq("id", nextSession.user.id)
           .single());
       } catch (requestError) {
@@ -143,6 +147,13 @@ if (collectionGrid && openChestButton) {
         return;
       }
 
+      if (typeof data.nickname !== "string" || !data.nickname) {
+        console.error("В профиле аккаунта отсутствует ник.");
+        chestStatus.textContent = "В профиле аккаунта не найден ник. Проверь миграции базы.";
+        return;
+      }
+
+      accountEmail.textContent = data.nickname;
       collection = { coins: data.coins, cards: data.cards, lastChest: data.last_chest };
       profileReady = true;
       renderCards();
@@ -165,10 +176,16 @@ if (collectionGrid && openChestButton) {
         authentication_required: "Войди в аккаунт, чтобы продолжить.",
         profile_not_found: "Профиль не найден. Попробуй выйти и войти снова.",
         invalid_card: "Эта карточка больше недоступна.",
-        not_enough_sg_bucks: "Не хватает SG-баксов."
+        not_enough_sg_bucks: "Не хватает SG-баксов.",
+        nickname_taken: "Этот ник уже занят. Попробуй другой.",
+        nickname_invalid: "Этот ник не подходит. Выбери другой."
       };
       if (error instanceof TypeError) return "Не удалось связаться с сервером. Проверь интернет и попробуй снова.";
-      return knownMessages[error.message] || error.message || "Произошла ошибка. Попробуй ещё раз.";
+      if (knownMessages[error.message]) return knownMessages[error.message];
+      if (/database error saving new user/i.test(error.message || "")) {
+        return "Не удалось создать аккаунт. Ник может быть занят или миграция профиля ещё не настроена.";
+      }
+      return error.message || "Произошла ошибка. Попробуй ещё раз.";
     }
 
     function triggerCelebration(target) {
@@ -543,12 +560,25 @@ if (collectionGrid && openChestButton) {
       setAccountMessage(authMode === "signup" ? "Создаю аккаунт..." : "Выполняю вход...");
       const email = document.querySelector("#account-form-email").value.trim();
       const password = document.querySelector("#account-form-password").value;
+      const nickname = window.SGAccountRules.normalizeNickname(accountNicknameInput.value);
+      if (authMode === "signup") {
+        const nicknameError = window.SGAccountRules.validateNickname(nickname);
+        if (nicknameError) {
+          setAccountMessage(nicknameError, true);
+          accountSubmit.disabled = false;
+          accountModeToggle.disabled = false;
+          return;
+        }
+      }
       try {
         const result = authMode === "signup"
           ? await supabaseClient.auth.signUp({
             email,
             password,
-            options: { emailRedirectTo: `${window.location.origin}${window.location.pathname}` }
+            options: {
+              data: { nickname },
+              emailRedirectTo: `${window.location.origin}${window.location.pathname}`
+            }
           })
           : await supabaseClient.auth.signInWithPassword({ email, password });
         if (result.error) throw result.error;

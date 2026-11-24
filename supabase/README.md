@@ -1,9 +1,13 @@
 # Аккаунты SG Games
 
-1. В Supabase открой **SQL Editor**, создай запрос, вставь содержимое `migrations/20261124120000_accounts.sql` и выполни его.
+1. В Supabase открой **SQL Editor** и выполни миграции по порядку:
+   - `migrations/20261124120000_accounts.sql`
+   - `migrations/20261124140000_profile_nicknames.sql`
 2. Открой **Authentication → URL Configuration** и установи:
    - Site URL: `https://s3rggg7.github.io/SGgame/`
-   - Redirect URL: `https://s3rggg7.github.io/SGgame/collection.html`
+   - Redirect URLs: `https://s3rggg7.github.io/SGgame/collection.html` и `https://s3rggg7.github.io/SGgame/profile.html`
 3. Оставь включённым подтверждение электронной почты. После регистрации игроку нужно перейти по ссылке из письма, затем войти на сайте.
 
-Ключ в `supabase-config.js` — публичный publishable key. Баланс и карточки доступны для чтения только владельцу аккаунта; изменения выполняются серверными функциями. Никогда не добавляй в сайт `service_role` или secret key.
+Ник уникален без учёта регистра, проверяется сервером на недопустимые слова и закрепляется за новым аккаунтом при регистрации. Пользователи, зарегистрированные раньше, смогут выбрать ник один раз в профиле. Аватар формируется из первой буквы ника.
+
+Ключ в `supabase-config.js` — публичный publishable key. Баланс, ник и карточки доступны для чтения только владельцу аккаунта; изменения баланса и карточек выполняются серверными функциями. Никогда не добавляй в сайт `service_role` или secret key.

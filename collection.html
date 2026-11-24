@@ -28,6 +28,7 @@
       <a href="index.html#games">Игры</a>
       <a href="index.html#about">Об авторе</a>
       <a class="active" href="collection.html">Коллекция</a>
+      <a href="profile.html">Профиль</a>
     </nav>
   </header>
 
@@ -103,6 +104,11 @@
       <h2 id="account-dialog-title">Войди или создай аккаунт</h2>
       <p class="account-intro">Аккаунт сохранит SG-баксы и карточки, а сундук будет доступен после входа.</p>
       <form id="account-form">
+        <label class="account-field" id="account-nickname-field" hidden>
+          <span>Ник (3–16 символов)</span>
+          <input id="account-form-nickname" name="nickname" type="text" autocomplete="nickname" minlength="3" maxlength="16" pattern="[A-Za-zА-Яа-яЁё0-9_]{3,16}">
+          <small>Русские или латинские буквы, цифры и подчёркивание. Ник уникальный и без оскорблений.</small>
+        </label>
         <label class="account-field">
           <span>Электронная почта</span>
           <input id="account-form-email" name="email" type="email" autocomplete="email" required>
@@ -127,6 +133,7 @@
   <script src="app.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+  <script src="account-rules.js"></script>
   <script src="collection.js"></script>
 </body>
 </html>

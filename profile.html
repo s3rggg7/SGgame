@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17191d">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Профиль — SG Games</title>
+  <meta name="description" content="Профиль игрока и коллекция карточек SG Games.">
+  <link rel="icon" type="image/png" href="assets/favicon.png?v=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="index.html" aria-label="SG Games — главная">
+      <img class="brand-mark" src="assets/logo.png?v=2" alt="" aria-hidden="true">
+      <span>SG Games</span>
+    </a>
+    <button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+    <nav class="nav" aria-label="Основная навигация">
+      <a href="index.html#games">Игры</a>
+      <a href="index.html#about">Об авторе</a>
+      <a href="collection.html">Коллекция</a>
+      <a class="active" href="profile.html">Профиль</a>
+    </nav>
+  </header>
+
+  <main class="profile-page">
+    <section class="profile-heading">
+      <p class="eyebrow">Аккаунт SG Games</p>
+      <h1>Профиль</h1>
+    </section>
+
+    <section class="profile-gate" id="profile-gate">
+      <h2>Твоя игровая коллекция</h2>
+      <p id="profile-gate-message">Войди или создай аккаунт, чтобы увидеть ник, баланс и собранные карточки.</p>
+      <button class="account-button" id="profile-open-account" type="button">Войти / создать аккаунт</button>
+    </section>
+
+    <section class="profile-content" id="profile-content" hidden>
+      <div class="profile-summary">
+        <div class="profile-avatar" id="profile-avatar" aria-hidden="true"></div>
+        <div class="profile-identity">
+          <p class="eyebrow">Игрок</p>
+          <h2 id="profile-nickname"></h2>
+          <p>Этот ник закреплён за аккаунтом.</p>
+        </div>
+        <button class="account-button account-signout" id="profile-signout" type="button">Выйти</button>
+      </div>
+
+      <form class="profile-claim" id="profile-nickname-form" hidden>
+        <label class="account-field" for="profile-nickname-input">
+          <span>Выбери свой ник (3–16 символов)</span>
+          <input id="profile-nickname-input" name="nickname" type="text" autocomplete="nickname" minlength="3" maxlength="16" pattern="[A-Za-zА-Яа-яЁё0-9_]{3,16}" required>
+          <small>Это можно сделать только один раз. Ник должен быть уникальным и без оскорблений.</small>
+        </label>
+        <button class="account-button" type="submit">Закрепить ник</button>
+        <p class="profile-claim-message" id="profile-nickname-message" aria-live="polite"></p>
+      </form>
+
+      <div class="profile-stats">
+        <div><span>SG-баксы</span><strong id="profile-coins">0</strong></div>
+        <div><span>Собрано карточек</span><strong id="profile-card-total">0</strong></div>
+      </div>
+      <p class="profile-status" id="profile-status" aria-live="polite"></p>
+
+      <section class="profile-cards" aria-labelledby="profile-cards-title">
+        <div class="collection-heading">
+          <h2 id="profile-cards-title">Мои карточки</h2>
+          <a class="text-link" href="collection.html">Открыть коллекцию ↗</a>
+        </div>
+        <p class="profile-card-empty" id="profile-card-empty" hidden>Пока нет собранных карточек. Открой сундук или купи карточку в коллекции.</p>
+        <div class="profile-card-grid collectible-grid" id="profile-card-grid"></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog class="account-dialog" id="account-dialog" aria-labelledby="account-dialog-title">
+    <button class="card-dialog-close" id="account-dialog-close" type="button" aria-label="Закрыть">×</button>
+    <div class="account-dialog-content">
+      <p class="eyebrow">SG Games</p>
+      <h2 id="account-dialog-title">Войди или создай аккаунт</h2>
+      <p class="account-intro">Аккаунт сохранит SG-баксы и карточки. Ник должен быть уникальным и не содержать оскорблений.</p>
+      <form id="account-form">
+        <label class="account-field" id="account-nickname-field" hidden>
+          <span>Ник (3–16 символов)</span>
+          <input id="account-form-nickname" name="nickname" type="text" autocomplete="nickname" minlength="3" maxlength="16" pattern="[A-Za-zА-Яа-яЁё0-9_]{3,16}">
+          <small>Русские или латинские буквы, цифры и подчёркивание.</small>
+        </label>
+        <label class="account-field">
+          <span>Электронная почта</span>
+          <input id="account-form-email" name="email" type="email" autocomplete="email" required>
+        </label>
+        <label class="account-field">
+          <span>Пароль</span>
+          <input id="account-form-password" name="password" type="password" autocomplete="current-password" minlength="8" required>
+        </label>
+        <button class="account-button account-submit" id="account-submit" type="submit">Войти</button>
+        <button class="account-mode-toggle" id="account-mode-toggle" type="button">Создать аккаунт</button>
+      </form>
+      <p class="account-message" id="account-message" aria-live="polite"></p>
+    </div>
+  </dialog>
+
+  <footer>
+    <a class="brand footer-brand" href="index.html"><img class="brand-mark" src="assets/logo.png?v=2" alt="" aria-hidden="true"><span>SG Games</span></a>
+    <p>© <span id="year"></span> s3rggg7</p>
+  </footer>
+
+  <script src="games.js"></script>
+  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="account-rules.js"></script>
+  <script src="profile.js"></script>
+</body>
+</html>

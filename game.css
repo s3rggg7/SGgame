@@ -2,6 +2,10 @@
 .detail-nav a { padding: 9px 13px; border: 1px solid transparent; border-radius: 999px; color: var(--muted); font-size: 13px; transition: background .2s, color .2s, border-color .2s; }
 .detail-nav a:hover { border-color: var(--line); background: rgba(255,255,255,.04); color: var(--text); }
 .detail-nav a:last-child { color: #f0c77e; }
+@media (max-width: 780px) {
+  .detail-nav.nav { display: none; }
+  .detail-nav.nav.open { display: flex; }
+}
 
 .store-page {
   min-height: 70vh;
