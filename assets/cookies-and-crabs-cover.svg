@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" fill="none">
+  <defs>
+    <linearGradient id="background" x1="120" y1="30" x2="1080" y2="690" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34302C"/>
+      <stop offset="1" stop-color="#17191D"/>
+    </linearGradient>
+    <radialGradient id="light" cx="0" cy="0" r="1" gradientTransform="matrix(0 380 -480 0 855 380)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D97736" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#D97736" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <path fill="url(#background)" d="M0 0h1200v720H0z"/>
+  <path fill="url(#light)" d="M0 0h1200v720H0z"/>
+  <g stroke="#F4F4F2" stroke-opacity=".12" stroke-width="3">
+    <path d="M0 590h1200"/>
+    <path d="M120 590v-80h100v-90h100v90h80v80"/>
+    <path d="M790 590v-110h110v-90h110v200"/>
+  </g>
+  <g transform="translate(870 350)">
+    <path d="M-145 26c-28-30-63-41-91-27 4 33 32 59 69 62M145 26c28-30 63-41 91-27-4 33-32 59-69 62M-119 93l-63 56m98-36-46 74m153-94 63 56m-98-36 46 74" stroke="#E9894D" stroke-linecap="round" stroke-width="19"/>
+    <path d="M-105 22c0-70 47-112 105-112S105-48 105 22v66c0 49-47 83-105 83s-105-34-105-83V22Z" fill="#D97736"/>
+    <path d="M-47-24v12m94-12v12" stroke="#17191D" stroke-linecap="round" stroke-width="17"/>
+    <path d="M-40 50c23 20 57 20 80 0" stroke="#17191D" stroke-linecap="round" stroke-width="10"/>
+  </g>
+  <g transform="translate(540 485)">
+    <circle r="82" fill="#C98B4B"/>
+    <circle cx="-29" cy="-19" r="8" fill="#51351F"/>
+    <circle cx="23" cy="-36" r="7" fill="#51351F"/>
+    <circle cx="35" cy="16" r="9" fill="#51351F"/>
+    <circle cx="-24" cy="37" r="7" fill="#51351F"/>
+    <circle cx="-52" cy="10" r="5" fill="#51351F"/>
+  </g>
+  <text x="72" y="130" fill="#E9894D" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="8">PLATFORM</text>
+  <text x="68" y="260" fill="#F4F4F2" font-family="Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="-4">COOKIES</text>
+  <text x="68" y="345" fill="#F4F4F2" font-family="Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="-4">&amp; CRABS</text>
+</svg>

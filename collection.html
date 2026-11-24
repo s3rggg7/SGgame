@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17191d">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Коллекция — SG Games</title>
+  <meta name="description" content="Открывай ежедневный сундук и собирай коллекционные карточки SG Games.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="index.html" aria-label="SG Games — главная">
+      <img class="brand-mark" src="assets/logo.png?v=2" alt="" aria-hidden="true">
+      <span>SG Games</span>
+    </a>
+    <button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+    <nav class="nav" aria-label="Основная навигация">
+      <a href="index.html#games">Игры</a>
+      <a href="index.html#about">Об авторе</a>
+      <a class="active" href="collection.html">Коллекция</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="collection-hero">
+      <div>
+        <p class="eyebrow">Ежедневные награды</p>
+        <h1>Коллекция</h1>
+        <p>Открывай сундук раз в день, собирай карточки игр и копи SG-баксы на покупки.</p>
+      </div>
+      <div class="collection-balance" aria-label="Баланс SG-баксов">
+        <span class="sg-bucks-mark" aria-hidden="true">SG</span>
+        <span id="coin-count">0</span>
+        <span>SG-баксов</span>
+      </div>
+    </section>
+
+    <section class="daily-chest" aria-labelledby="daily-chest-title">
+      <div class="daily-chest-copy">
+        <p class="eyebrow">Новая награда каждый день</p>
+        <h2 id="daily-chest-title">Ежедневный сундук</h2>
+        <p>Из сундука может выпасть карточка или SG-баксы.</p>
+        <div class="chest-actions">
+          <button class="chest-button" id="open-chest" type="button">Открыть сундук</button>
+          <button class="chest-reset" id="reset-chest-limit" type="button">Сбросить лимит (тест)</button>
+          <button class="chest-reset" id="reset-cards" type="button">Сбросить карты (тест)</button>
+        </div>
+        <p class="development-note">Тестовые кнопки сбрасывают дневной лимит или карточки по отдельности. SG-баксы сохраняются.</p>
+        <p class="chest-status" id="chest-status" aria-live="polite">Можно открыть один сундук в день.</p>
+        <div class="chest-result" id="chest-result" aria-live="polite" aria-atomic="true"></div>
+      </div>
+      <div class="chest-scene" id="chest-scene" aria-hidden="true">
+        <div class="chest-glow"></div>
+        <span class="chest-sparkle sparkle-one">✦</span>
+        <span class="chest-sparkle sparkle-two">✧</span>
+        <div class="treasure-chest">
+          <div class="chest-lid"></div>
+          <div class="chest-body">
+            <span class="chest-band"></span>
+            <span class="chest-lock"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="collection-section" aria-labelledby="cards-title">
+      <div class="collection-heading">
+        <h2 id="cards-title">Карточки игр</h2>
+        <p id="card-total">Собрано 0 из 0</p>
+      </div>
+      <div class="collection-sort" role="group" aria-label="Сортировка карточек">
+        <span class="collection-sort-label">Сортировать:</span>
+        <button class="collection-sort-option active" type="button" data-card-sort="collection" aria-pressed="true">По коллекциям</button>
+        <button class="collection-sort-option" type="button" data-card-sort="rarity" aria-pressed="false">По редкости</button>
+        <button class="collection-sort-option" type="button" data-card-sort="collected" aria-pressed="false">Сначала собранные</button>
+      </div>
+      <div class="collectible-grid" id="card-grid"></div>
+    </section>
+
+  </main>
+
+  <dialog class="card-dialog" id="card-dialog" aria-label="Информация о карточке">
+    <button class="card-dialog-close" id="card-dialog-close" type="button" aria-label="Закрыть">×</button>
+    <div class="card-dialog-content" id="card-dialog-content"></div>
+  </dialog>
+
+  <footer>
+    <a class="brand footer-brand" href="index.html"><img class="brand-mark" src="assets/logo.png?v=2" alt="" aria-hidden="true"><span>SG Games</span></a>
+    <p>© <span id="year"></span> s3rggg7</p>
+  </footer>
+
+  <script src="games.js"></script>
+  <script src="app.js"></script>
+  <script src="collection.js"></script>
+</body>
+</html>

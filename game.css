@@ -1,0 +1,113 @@
+.detail-nav { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.detail-nav a { padding: 9px 13px; border: 1px solid transparent; border-radius: 999px; color: var(--muted); font-size: 13px; transition: background .2s, color .2s, border-color .2s; }
+.detail-nav a:hover { border-color: var(--line); background: rgba(255,255,255,.04); color: var(--text); }
+.detail-nav a:last-child { color: #f0c77e; }
+
+.store-page {
+  min-height: 70vh;
+  padding: 32px clamp(20px, 5vw, 72px) 90px;
+  background:
+    radial-gradient(ellipse at 78% 12%, rgba(240,199,126,.09), transparent 38%),
+    linear-gradient(180deg, #1d2025, var(--bg) 760px);
+}
+.store-heading, .store-layout { width: min(1120px, 100%); margin-inline: auto; }
+.store-heading { margin-bottom: 20px; }
+.store-kicker { margin: 0 0 7px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.store-kicker span { padding: 0 6px; color: #f0c77e; }
+.store-heading h1 { margin: 0; color: var(--text); font-size: clamp(32px, 5vw, 52px); font-weight: 700; letter-spacing: -.055em; line-height: 1.1; }
+.store-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; align-items: start; gap: 18px; }
+.store-main-column { min-width: 0; }
+.store-media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #15171b;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .3);
+}
+.store-media-backdrop { position: absolute; inset: -10%; width: 120%; height: 120%; object-fit: cover; filter: blur(26px) brightness(.32) saturate(.65); }
+.store-media-art { position: relative; z-index: 1; width: 100%; height: 100%; display: block; object-fit: contain; }
+.store-media-art.contain { background: transparent; }
+.store-sidebar { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(145deg, rgba(255,255,255,.035), transparent 60%), var(--surface); color: var(--text); }
+.store-short { margin: 0 0 14px; color: #d3d5d9; font-size: 13px; line-height: 1.7; }
+.store-facts { margin: 0; }
+.store-facts > div { display: grid; grid-template-columns: 90px 1fr; gap: 8px; padding: 9px 0; border-top: 1px solid var(--line); font-size: 12px; }
+.store-facts dt { color: var(--muted); }
+.store-facts dd { margin: 0; color: #f0c77e; }
+.store-download { margin: 18px -3px -3px; padding: 13px; border: 1px solid rgba(240,199,126,.2); border-radius: 12px; background: rgba(15,16,18,.42); }
+.store-download p { margin: 0 0 10px; color: #d3d5d9; font-size: 12px; }
+.store-download .download-size { margin: 8px 0 0; color: var(--muted); font-size: 11px; text-align: center; }
+.download-button {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffe09a, #e6ac4d);
+  color: #241a0b;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 6px 20px rgba(220,163,63,.2);
+  transition: filter .2s, transform .2s;
+}
+.download-button::after { content: "↓"; font-size: 18px; }
+.download-button:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.store-overview { margin-top: 28px; padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.game-collection { width: min(1120px, 100%); margin: 28px auto 0; padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.game-collection-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+.game-collection-heading .store-kicker { margin-bottom: 5px; }
+.game-collection-heading .section-title { margin: 0; }
+.game-collection-link { flex: 0 0 auto; color: #f0c77e; font-size: 12px; font-weight: 700; }
+.game-collectible-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 160px)); gap: 12px; }
+.game-collectible { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: #191b1f; }
+.game-collectible.rarity-rare { border-color: rgba(91,174,255,.45); }
+.game-collectible.rarity-legendary { border-color: rgba(255,199,74,.55); }
+.game-collectible-art { aspect-ratio: 3 / 4; position: relative; overflow: hidden; background: #25282d; }
+.game-collectible-art img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.game-collectible.is-locked .game-collectible-art img { filter: grayscale(1); opacity: .3; }
+.game-collectible-lock { position: absolute; inset: 0; display: grid; place-items: center; color: #f0c77e; font-size: 32px; font-weight: 800; }
+.game-collectible-info { min-height: 100px; padding: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+.game-collectible-name { width: 100%; overflow: hidden; color: var(--text); font-size: 13px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.game-collectible .rarity-tag { font-size: 9px; }
+.game-collectible-count { margin-top: auto; color: var(--muted); font-size: 11px; }
+.game-collectible.is-collected .game-collectible-count { color: #f0c77e; font-weight: 700; }
+.game-collection-error { margin: 0; color: #d3d5d9; font-size: 13px; }
+.section-title { margin: 0 0 14px; color: #f0c77e; font-size: 15px; font-weight: 700; }
+.description { max-width: 850px; margin: 0; color: #d3d5d9; font-size: 14px; line-height: 1.8; }
+.features-heading { margin: 24px 0 10px; color: var(--text); font-size: 14px; font-weight: 700; }
+.feature-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.feature-list li { position: relative; min-height: 58px; padding: 12px 12px 12px 28px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.025); color: #c9cbd0; font-size: 12px; line-height: 1.55; }
+.feature-list li::before { content: "✓"; position: absolute; top: 12px; left: 10px; color: #f0c77e; }
+.screenshots { margin-top: 28px; padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.screenshot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.screenshot-grid img { width: 100%; display: block; border: 1px solid var(--line); border-radius: 10px; }
+.not-found { min-height: 60vh; display: grid; place-items: center; padding: 40px 20px; text-align: center; }
+.not-found h1 { margin-bottom: 16px; }
+
+@media (max-width: 760px) {
+  .detail-nav { gap: 3px; }
+  .detail-nav a { padding: 8px 9px; font-size: 12px; }
+  .store-page { padding: 26px 14px 60px; }
+  .store-layout { grid-template-columns: 1fr; gap: 12px; }
+  .store-heading { margin-bottom: 16px; }
+  .store-heading h1 { font-size: clamp(30px, 8vw, 42px); }
+  .store-media { aspect-ratio: 16 / 10; }
+  .store-sidebar { display: grid; grid-template-columns: 1fr; }
+  .store-overview, .screenshots { margin-top: 16px; padding: 18px; }
+  .game-collection { margin-top: 16px; padding: 16px; }
+  .game-collectible-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .game-collectible-info { min-height: 86px; padding: 8px; }
+  .game-collectible-name { font-size: 11px; }
+  .game-collectible-count { font-size: 9px; }
+  .feature-list { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .download-button { transition: none; }
+}

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17191d">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>SG Games — Игры от s3rggg7</title>
+  <meta name="description" content="Каталог игр и проектов от независимого разработчика s3rggg7.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="index.html" aria-label="SG Games — главная">
+      <img class="brand-mark" src="assets/logo.png?v=2" alt="" aria-hidden="true">
+      <span>SG Games</span>
+    </a>
+    <button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+    <nav class="nav" aria-label="Основная навигация">
+      <a class="active" href="#games">Игры</a>
+      <a href="#about">Об авторе</a>
+      <a href="collection.html">Коллекция</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="games">
+      <div class="hero-copy">
+        <p class="hero-kicker reveal">Мир игр от s3rggg7</p>
+        <div class="hero-title-row reveal">
+          <h1>Играй. Тренируйся. Собирай.</h1>
+          <img class="hero-logo" src="assets/logo.png?v=2" alt="Логотип SG Game">
+        </div>
+        <p class="hero-subtitle reveal">Скачивай игры, играй и собирай карточки для коллекции.</p>
+        <div class="hero-actions reveal">
+          <a class="hero-primary" href="#game-catalog">Найти игру <span aria-hidden="true">↓</span></a>
+          <a class="hero-secondary" href="collection.html">Моя коллекция <span aria-hidden="true">↗</span></a>
+          <a class="home-balance" href="collection.html" aria-label="Баланс SG-баксов. Перейти в коллекцию">
+            <span class="sg-bucks-mark small" aria-hidden="true">SG</span>
+            <span class="home-balance-value"><strong id="home-coin-count">0</strong><small>SG-баксов</small></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog" id="game-catalog" aria-labelledby="catalog-title">
+      <div class="catalog-head reveal">
+        <div class="catalog-intro">
+          <p class="eyebrow">Каталог проектов</p>
+          <h2 id="catalog-title">Выбери игру</h2>
+          <p class="catalog-count" id="game-count" aria-live="polite">0 проектов</p>
+        </div>
+        <div class="catalog-controls">
+          <label class="game-search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+            <input id="game-search" type="search" placeholder="Найти игру..." aria-label="Поиск по играм" autocomplete="off">
+          </label>
+          <div class="filters" role="group" aria-label="Категория игр">
+            <button class="filter active" type="button" data-filter="all" aria-pressed="true">Все</button>
+            <button class="filter" type="button" data-filter="arcade" aria-pressed="false">Arcade</button>
+            <button class="filter" type="button" data-filter="platform" aria-pressed="false">Platform</button>
+          </div>
+        </div>
+      </div>
+      <div class="game-grid" id="game-grid"></div>
+    </section>
+
+    <section class="about" id="about">
+      <div class="about-label reveal">Об авторе</div>
+      <div class="about-card reveal">
+        <div class="author-avatar-wrap">
+          <svg class="author-crown" viewBox="0 0 100 76" aria-hidden="true">
+            <path d="M16 57 8 25l19 14L47 8l17 31 20-17-4 35H16Z" fill="#f4f4f2" stroke="#17191d" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+            <path d="M18 61h60M22 68h52M22 37l-7-10m39-9 10 18m10-4 14-12" fill="none" stroke="#17191d" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="8" cy="22" r="4" fill="#f4f4f2" stroke="#17191d" stroke-width="3"/>
+            <circle cx="47" cy="7" r="4" fill="#f4f4f2" stroke="#17191d" stroke-width="3"/>
+            <circle cx="85" cy="20" r="4" fill="#f4f4f2" stroke="#17191d" stroke-width="3"/>
+          </svg>
+          <button class="avatar avatar-trigger" id="author-avatar" type="button" aria-label="Нажми на аватар автора для пасхалки">
+            <img src="assets/author-avatar.jpeg" alt="">
+          </button>
+        </div>
+        <div class="author-bio">
+          <p class="eyebrow">Разработчик и создатель игр</p>
+          <h2>s3rggg7</h2>
+          <p class="about-text">Молодой разработчик. Самостоятельно создаю простые игры для телефонов — от идеи до готового проекта.</p>
+          <div class="author-contact">
+            <a class="text-link" href="https://t.me/s3rggg7" target="_blank" rel="noreferrer">
+              <svg class="telegram-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21.8 3.1 18.7 20c-.2 1-.8 1.2-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.4-4.9 8.9-8c.4-.4-.1-.6-.6-.2L6.2 13.7.9 12c-1.2-.4-1.2-1.2.3-1.8L20.5 2c.9-.4 1.7.2 1.3 1.1Z"/>
+              </svg>
+              <span>@s3rggg7</span>
+              <span>↗</span>
+            </a>
+            <div class="telegram-qr" role="group" aria-label="QR-код для Telegram @s3rggg7">
+              <img src="assets/telegram-s3rggg7.svg" alt="QR-код, ведущий на Telegram @s3rggg7">
+              <span><strong>Telegram</strong><small>Сканируй, чтобы написать</small></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="index.html"><img class="brand-mark" src="assets/logo.png?v=2" alt="" aria-hidden="true"><span>SG Games</span></a>
+    <p>© <span id="year"></span> s3rggg7</p>
+  </footer>
+
+  <script src="games.js"></script>
+  <script src="app.js?v=3"></script>
+</body>
+</html>
