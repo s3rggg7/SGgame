@@ -1,7 +1,5 @@
 const collectionGrid = document.querySelector("#card-grid");
 const openChestButton = document.querySelector("#open-chest");
-const resetChestButton = document.querySelector("#reset-chest-limit");
-const resetCardsButton = document.querySelector("#reset-cards");
 const cardDialog = document.querySelector("#card-dialog");
 const cardDialogContent = document.querySelector("#card-dialog-content");
 const collectionSort = document.querySelector(".collection-sort");
@@ -90,8 +88,6 @@ if (collectionGrid && openChestButton) {
   } catch (error) {
     console.error("Не удалось загрузить коллекцию.", error);
     openChestButton.disabled = true;
-    resetChestButton.disabled = true;
-    resetCardsButton.disabled = true;
     chestStatus.textContent = "Не удалось загрузить коллекцию. Проверь хранилище браузера.";
     collectionGrid.textContent = "Коллекция сейчас недоступна.";
   }
@@ -383,46 +379,6 @@ if (collectionGrid && openChestButton) {
     renderCards();
     showDailyReward();
 
-    resetChestButton.addEventListener("click", () => {
-      if (collection.lastChest?.date !== todayKey) {
-        chestStatus.textContent = "Дневной лимит уже свободен.";
-        return;
-      }
-
-      const nextCollection = { ...collection, lastChest: null };
-      try {
-        localStorage.setItem(storageKey, JSON.stringify(nextCollection));
-      } catch (error) {
-        console.error("Не удалось сбросить дневной лимит.", error);
-        chestStatus.textContent = "Не удалось сбросить лимит. Проверь хранилище браузера.";
-        return;
-      }
-
-      collection = nextCollection;
-      openChestButton.disabled = false;
-      chestResult.replaceChildren();
-      chestScene.classList.remove("is-open");
-      chestScene.classList.remove("is-opening");
-      chestStatus.classList.remove("is-open");
-      chestStatus.textContent = "Лимит сброшен. Можно снова открыть сундук.";
-    });
-
-    resetCardsButton.addEventListener("click", () => {
-      const nextCollection = { ...collection, cards: {} };
-      try {
-        localStorage.setItem(storageKey, JSON.stringify(nextCollection));
-      } catch (error) {
-        console.error("Не удалось сбросить карточки.", error);
-        chestStatus.textContent = "Не удалось сбросить карточки. Проверь хранилище браузера.";
-        return;
-      }
-
-      collection = nextCollection;
-      renderCards();
-      chestStatus.classList.remove("is-open");
-      chestStatus.textContent = "Карточки сброшены. SG-баксы и дневной лимит сохранены.";
-    });
-
     openChestButton.addEventListener("click", () => {
       if (collection.lastChest?.date === todayKey) return;
 
@@ -454,7 +410,6 @@ if (collectionGrid && openChestButton) {
 
       collection = nextCollection;
       openChestButton.disabled = true;
-      resetChestButton.disabled = true;
       chestResult.replaceChildren();
       chestStatus.textContent = "Сундук дрожит и открывается...";
       chestStatus.classList.remove("is-open");
@@ -469,7 +424,6 @@ if (collectionGrid && openChestButton) {
         chestStatus.classList.add("is-open");
         renderReward(reward, true, () => {
           renderCards();
-          resetChestButton.disabled = false;
         });
       }, animationDelay);
     });
