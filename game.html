@@ -28,6 +28,14 @@
       <a href="collection.html">Коллекция</a>
       <a href="profile.html">Профиль</a>
     </nav>
+    <a class="header-account" href="profile.html" aria-label="Открыть профиль">
+      <svg class="header-account-placeholder" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M4 21a8 8 0 0 1 16 0"></path>
+      </svg>
+      <span class="header-account-letter" aria-hidden="true" hidden></span>
+      <img class="header-account-image" alt="" hidden>
+    </a>
   </header>
 
   <main id="game-page"></main>
@@ -37,6 +45,9 @@
     <p>© <span id="year"></span> s3rggg7</p>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="header-account.js"></script>
   <script src="games.js?v=2"></script>
   <script src="game.js?v=2"></script>
 </body>
