@@ -688,7 +688,9 @@ button { font: inherit; }
 .account-intro { margin: 0 0 24px; color: var(--muted); font-size: 14px; line-height: 1.6; }
 #account-form { display: grid; gap: 14px; }
 #delete-account-form { display: grid; gap: 14px; }
+#password-update-form { display: grid; gap: 14px; }
 .account-field[hidden] { display: none; }
+.account-mode-toggle[hidden] { display: none; }
 .account-field { display: grid; gap: 7px; color: #d3d5d9; font-size: 13px; font-weight: 700; }
 .account-field input {
   min-height: 46px;
@@ -718,6 +720,7 @@ button { font: inherit; }
 .profile-avatar { width: 82px; height: 82px; flex: 0 0 auto; display: grid; place-items: center; border: 3px solid rgba(255,255,255,.22); border-radius: 50%; background: hsl(var(--avatar-hue, 210) 42% 34%); color: #fff; font-size: 34px; font-weight: 800; box-shadow: 0 8px 24px rgba(0,0,0,.24); }
 .profile-avatar img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
 .profile-summary-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.profile-password-status { min-height: 1.4em; margin: 8px 0 0; color: var(--muted); font-size: 13px; }
 .profile-danger-button { border-color: rgba(255,112,112,.45); background: rgba(120,35,35,.18); color: #ffaaa3; }
 .profile-danger-button:hover:not(:disabled) { border-color: #ff8580; background: rgba(150,45,45,.28); color: #ffd1cd; }
 .profile-summary-actions .profile-danger-button { padding-inline: 12px; }

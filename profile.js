@@ -16,6 +16,8 @@ const profileCardTotal = document.querySelector("#profile-card-total");
 const profileCardEmpty = document.querySelector("#profile-card-empty");
 const profileCardGrid = document.querySelector("#profile-card-grid");
 const profileSignout = document.querySelector("#profile-signout");
+const profilePasswordReset = document.querySelector("#profile-password-reset");
+const profilePasswordStatus = document.querySelector("#profile-password-status");
 const profileDeleteAccount = document.querySelector("#profile-delete-account");
 const profileNicknameForm = document.querySelector("#profile-nickname-form");
 const profileNicknameInput = document.querySelector("#profile-nickname-input");
@@ -220,6 +222,25 @@ profileSignout.addEventListener("click", async () => {
     console.error("Не удалось выйти из аккаунта.", error);
     profileStatus.textContent = "Не удалось выйти. Попробуй ещё раз.";
     profileSignout.disabled = false;
+  }
+});
+
+profilePasswordReset.addEventListener("click", async () => {
+  if (!session?.user.email) {
+    profilePasswordStatus.textContent = "Не удалось определить почту аккаунта. Выйди и войди снова.";
+    return;
+  }
+
+  profilePasswordReset.disabled = true;
+  profilePasswordStatus.textContent = "Отправляю ссылку для смены пароля...";
+  try {
+    await accountAuth.sendPasswordReset(session.user.email);
+    profilePasswordStatus.textContent = "Письмо отправлено. Перейди по ссылке, чтобы задать новый пароль.";
+  } catch (error) {
+    console.error("Не удалось отправить ссылку для смены пароля.", error);
+    profilePasswordStatus.textContent = "Не удалось отправить письмо. Проверь подключение и попробуй снова.";
+  } finally {
+    profilePasswordReset.disabled = false;
   }
 });
 

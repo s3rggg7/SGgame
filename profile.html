@@ -72,9 +72,11 @@
         </div>
         <div class="profile-summary-actions">
           <button class="account-button account-signout" id="profile-signout" type="button">Выйти</button>
+          <button class="account-button account-signout" id="profile-password-reset" type="button">Сменить пароль</button>
           <button class="account-button profile-danger-button" id="profile-delete-account" type="button">Удалить аккаунт</button>
         </div>
       </div>
+      <p class="profile-password-status" id="profile-password-status" aria-live="polite"></p>
 
       <form class="profile-claim" id="profile-nickname-form">
         <label class="account-field" for="profile-nickname-input">
@@ -102,6 +104,28 @@
       </section>
     </section>
   </main>
+
+  <dialog class="account-dialog" id="password-update-dialog" aria-labelledby="password-update-title">
+    <button class="card-dialog-close" id="password-update-close" type="button" aria-label="Закрыть">×</button>
+    <div class="account-dialog-content">
+      <p class="eyebrow">SG Games</p>
+      <h2 id="password-update-title">Новый пароль</h2>
+      <p class="account-intro">Придумай пароль не короче 8 символов.</p>
+      <form id="password-update-form">
+        <label class="account-field">
+          <span>Новый пароль</span>
+          <input id="password-update-input" type="password" autocomplete="new-password" minlength="8" required>
+        </label>
+        <label class="account-field">
+          <span>Повтори пароль</span>
+          <input id="password-update-confirmation" type="password" autocomplete="new-password" minlength="8" required>
+        </label>
+        <button class="account-button account-submit" id="password-update-submit" type="submit">Сохранить пароль</button>
+        <button class="account-mode-toggle" id="password-update-cancel" type="button">Отмена</button>
+      </form>
+      <p class="account-message" id="password-update-message" aria-live="polite"></p>
+    </div>
+  </dialog>
 
   <dialog class="account-dialog" id="delete-account-dialog" aria-labelledby="delete-account-title">
     <button class="card-dialog-close" id="delete-account-close" type="button" aria-label="Закрыть">×</button>
@@ -147,6 +171,7 @@
         </label>
         <button class="account-button account-submit" id="account-submit" type="submit">Войти</button>
         <button class="account-mode-toggle" id="account-mode-toggle" type="button">Создать аккаунт</button>
+        <button class="account-mode-toggle" id="account-password-reset" type="button">Забыл пароль?</button>
       </form>
       <p class="account-message" id="account-message" aria-live="polite"></p>
     </div>
