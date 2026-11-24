@@ -70,7 +70,10 @@
           </div>
           <p class="profile-avatar-status" id="profile-avatar-status" aria-live="polite"></p>
         </div>
-        <button class="account-button account-signout" id="profile-signout" type="button">Выйти</button>
+        <div class="profile-summary-actions">
+          <button class="account-button account-signout" id="profile-signout" type="button">Выйти</button>
+          <button class="account-button profile-danger-button" id="profile-delete-account" type="button">Удалить аккаунт</button>
+        </div>
       </div>
 
       <form class="profile-claim" id="profile-nickname-form">
@@ -99,6 +102,28 @@
       </section>
     </section>
   </main>
+
+  <dialog class="account-dialog" id="delete-account-dialog" aria-labelledby="delete-account-title">
+    <button class="card-dialog-close" id="delete-account-close" type="button" aria-label="Закрыть">×</button>
+    <div class="account-dialog-content">
+      <p class="eyebrow">Удаление аккаунта</p>
+      <h2 id="delete-account-title">Удалить аккаунт навсегда?</h2>
+      <p class="account-intro">Ник, SG-баксы, карточки и аватар будут удалены без возможности восстановления. Для подтверждения введи пароль и слово «УДАЛИТЬ».</p>
+      <form id="delete-account-form">
+        <label class="account-field">
+          <span>Пароль от аккаунта</span>
+          <input id="delete-account-password" name="password" type="password" autocomplete="current-password" required>
+        </label>
+        <label class="account-field">
+          <span>Напиши УДАЛИТЬ</span>
+          <input id="delete-account-confirmation" name="confirmation" type="text" autocomplete="off" required>
+        </label>
+        <button class="account-button profile-danger-button" id="delete-account-submit" type="submit">Удалить навсегда</button>
+        <button class="account-mode-toggle" id="delete-account-cancel" type="button">Отмена</button>
+      </form>
+      <p class="account-message" id="delete-account-message" aria-live="polite"></p>
+    </div>
+  </dialog>
 
   <dialog class="account-dialog" id="account-dialog" aria-labelledby="account-dialog-title">
     <button class="card-dialog-close" id="account-dialog-close" type="button" aria-label="Закрыть">×</button>

@@ -16,6 +16,7 @@ const profileCardTotal = document.querySelector("#profile-card-total");
 const profileCardEmpty = document.querySelector("#profile-card-empty");
 const profileCardGrid = document.querySelector("#profile-card-grid");
 const profileSignout = document.querySelector("#profile-signout");
+const profileDeleteAccount = document.querySelector("#profile-delete-account");
 const profileNicknameForm = document.querySelector("#profile-nickname-form");
 const profileNicknameInput = document.querySelector("#profile-nickname-input");
 const profileNicknameMessage = document.querySelector("#profile-nickname-message");
@@ -26,6 +27,14 @@ const accountSubmit = document.querySelector("#account-submit");
 const accountModeToggle = document.querySelector("#account-mode-toggle");
 const accountNicknameField = document.querySelector("#account-nickname-field");
 const accountNicknameInput = document.querySelector("#account-form-nickname");
+const deleteAccountDialog = document.querySelector("#delete-account-dialog");
+const deleteAccountForm = document.querySelector("#delete-account-form");
+const deleteAccountPassword = document.querySelector("#delete-account-password");
+const deleteAccountConfirmation = document.querySelector("#delete-account-confirmation");
+const deleteAccountSubmit = document.querySelector("#delete-account-submit");
+const deleteAccountCancel = document.querySelector("#delete-account-cancel");
+const deleteAccountClose = document.querySelector("#delete-account-close");
+const deleteAccountMessage = document.querySelector("#delete-account-message");
 const supabaseClient = window.supabase && window.SG_SUPABASE_CONFIG
   ? window.supabase.createClient(
     window.SG_SUPABASE_CONFIG.url,
@@ -99,7 +108,7 @@ async function prepareAvatar(file) {
     const context = canvas.getContext("2d");
     if (!context) throw new Error("avatar_canvas_unavailable");
 
-    const scale = Math.min(size / bitmap.width, size / bitmap.height);
+    const scale = Math.max(size / bitmap.width, size / bitmap.height);
     const width = Math.round(bitmap.width * scale);
     const height = Math.round(bitmap.height * scale);
     context.drawImage(bitmap, (size - width) / 2, (size - height) / 2, width, height);
@@ -234,6 +243,108 @@ profileSignout.addEventListener("click", async () => {
     console.error("Не удалось выйти из аккаунта.", error);
     profileStatus.textContent = "Не удалось выйти. Попробуй ещё раз.";
     profileSignout.disabled = false;
+  }
+});
+
+function closeDeleteAccountDialog() {
+  deleteAccountDialog.close();
+  deleteAccountForm.reset();
+  deleteAccountMessage.textContent = "";
+  deleteAccountMessage.classList.remove("is-error");
+}
+
+profileDeleteAccount.addEventListener("click", () => {
+  deleteAccountForm.reset();
+  deleteAccountMessage.textContent = "";
+  deleteAccountMessage.classList.remove("is-error");
+  deleteAccountDialog.showModal();
+  deleteAccountPassword.focus();
+});
+deleteAccountCancel.addEventListener("click", closeDeleteAccountDialog);
+deleteAccountClose.addEventListener("click", closeDeleteAccountDialog);
+deleteAccountDialog.addEventListener("click", event => {
+  if (event.target === deleteAccountDialog && !deleteAccountSubmit.disabled) closeDeleteAccountDialog();
+});
+deleteAccountDialog.addEventListener("cancel", event => {
+  if (deleteAccountSubmit.disabled) event.preventDefault();
+});
+deleteAccountDialog.addEventListener("close", () => {
+  deleteAccountForm.reset();
+  deleteAccountMessage.textContent = "";
+  deleteAccountMessage.classList.remove("is-error");
+});
+deleteAccountForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (!session?.user.email) {
+    deleteAccountMessage.textContent = "Не удалось определить почту аккаунта. Выйди и войди снова.";
+    deleteAccountMessage.classList.add("is-error");
+    return;
+  }
+  if (deleteAccountConfirmation.value.trim().toLocaleUpperCase("ru") !== "УДАЛИТЬ") {
+    deleteAccountMessage.textContent = "Для подтверждения напиши УДАЛИТЬ.";
+    deleteAccountMessage.classList.add("is-error");
+    return;
+  }
+
+  const userId = session.user.id;
+  deleteAccountSubmit.disabled = true;
+  deleteAccountCancel.disabled = true;
+  deleteAccountClose.disabled = true;
+  deleteAccountMessage.classList.remove("is-error");
+  deleteAccountMessage.textContent = "Проверяю пароль и удаляю аккаунт...";
+  try {
+    const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
+      email: session.user.email,
+      password: deleteAccountPassword.value
+    });
+    if (authError) throw authError;
+    if (authData.user.id !== userId) throw new Error("account_identity_mismatch");
+
+    const { data: canDelete, error: preflightError } = await supabaseClient.rpc("can_delete_sg_game_account");
+    if (preflightError) throw preflightError;
+    if (!canDelete) throw new Error("account_not_found");
+
+    if (currentAvatarPath) {
+      const { error: avatarError } = await supabaseClient.storage
+        .from(avatarBucket)
+        .remove([currentAvatarPath]);
+      if (avatarError) {
+        console.error("Не удалось удалить аватар перед удалением аккаунта.", avatarError);
+        throw new Error("avatar_cleanup_failed");
+      }
+    }
+
+    const { error: deleteError } = await supabaseClient.rpc("delete_sg_game_account");
+    if (deleteError) throw deleteError;
+
+    window.SGAvatarCache?.clear(userId);
+    const { error: signOutError } = await supabaseClient.auth.signOut({ scope: "local" });
+    if (signOutError) console.error("Аккаунт удалён, но локальный выход завершился ошибкой.", signOutError);
+    closeDeleteAccountDialog();
+    await loadProfile(null);
+    window.setTimeout(() => {
+      profileGateMessage.textContent = "Аккаунт удалён. Теперь можно создать новый аккаунт.";
+    }, 0);
+  } catch (error) {
+    console.error("Не удалось удалить аккаунт.", error);
+    let message = "Не удалось удалить аккаунт. Проверь подключение и попробуй снова.";
+    if (/invalid login credentials/i.test(error.message || "")) {
+      message = "Пароль неверный. Проверь его и попробуй снова.";
+    } else if (error.message === "avatar_cleanup_failed") {
+      message = "Не удалось удалить аватар. Аккаунт пока не удалён, попробуй ещё раз.";
+    } else if (error.message === "account_identity_mismatch") {
+      message = "Введённые данные относятся к другому аккаунту.";
+    } else if (/can_delete_sg_game_account|delete_sg_game_account|schema cache/i.test(error.message || "")) {
+      message = "Сначала выполни новую миграцию удаления аккаунта в Supabase.";
+    } else if (error.message === "account_not_found") {
+      message = "Аккаунт уже не найден. Попробуй выйти и войти снова.";
+    }
+    deleteAccountMessage.textContent = message;
+    deleteAccountMessage.classList.add("is-error");
+  } finally {
+    deleteAccountSubmit.disabled = false;
+    deleteAccountCancel.disabled = false;
+    deleteAccountClose.disabled = false;
   }
 });
 
