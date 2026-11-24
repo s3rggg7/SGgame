@@ -124,52 +124,6 @@ if (grid) {
   });
 }
 
-const authorAvatar = document.querySelector("#author-avatar");
-let authorJinglePlaying = false;
-authorAvatar?.addEventListener("click", async () => {
-  if (authorJinglePlaying) return;
-
-  const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextConstructor) {
-    console.error("Браузер не поддерживает звук пасхалки.");
-    return;
-  }
-
-  authorJinglePlaying = true;
-  let audioContext;
-  try {
-    audioContext = new AudioContextConstructor();
-    if (audioContext.state === "suspended") await audioContext.resume();
-
-    const oscillator = audioContext.createOscillator();
-    const volume = audioContext.createGain();
-    const startTime = audioContext.currentTime;
-    oscillator.type = "triangle";
-    oscillator.frequency.setValueAtTime(460, startTime);
-    oscillator.frequency.exponentialRampToValueAtTime(820, startTime + 0.12);
-    oscillator.frequency.exponentialRampToValueAtTime(250, startTime + 0.26);
-    oscillator.frequency.exponentialRampToValueAtTime(520, startTime + 0.36);
-    oscillator.frequency.exponentialRampToValueAtTime(120, startTime + 0.5);
-    volume.gain.setValueAtTime(0.0001, startTime);
-    volume.gain.exponentialRampToValueAtTime(0.16, startTime + 0.025);
-    volume.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.5);
-    oscillator.connect(volume);
-    volume.connect(audioContext.destination);
-    oscillator.addEventListener("ended", () => {
-      authorJinglePlaying = false;
-      audioContext.close().catch(error => console.error("Не удалось закрыть аудиоконтекст.", error));
-    }, { once: true });
-    oscillator.start(startTime);
-    oscillator.stop(startTime + 0.5);
-  } catch (error) {
-    authorJinglePlaying = false;
-    if (audioContext && audioContext.state !== "closed") {
-      audioContext.close().catch(closeError => console.error("Не удалось закрыть аудиоконтекст.", closeError));
-    }
-    console.error("Не удалось воспроизвести звук пасхалки.", error);
-  }
-});
-
 const menu = document.querySelector(".menu-toggle");
 const nav = document.querySelector(".nav");
 menu?.addEventListener("click", () => {
