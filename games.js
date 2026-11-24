@@ -42,5 +42,39 @@ const GAMES = [
       "Трагичный сюжет и цель — спасти девушку",
       "Разнообразные препятствия"
     ]
+  },
+  {
+    id: "strike-and-shatter",
+    title: "Strike and Shatter",
+    genre: "Arcade",
+    cover: "assets/strike-and-shatter-cover.svg",
+    collectibleCards: [
+      {
+        rarity: "common",
+        name: "Первый удар",
+        description: "Каждое большое разрушение начинается с одного точного удара.",
+        cover: "assets/strike-and-shatter-impact.svg"
+      },
+      {
+        rarity: "rare",
+        name: "Кристальный страж",
+        description: "Хранитель кристаллов держит оборону, пока не разлетится на осколки.",
+        cover: "assets/strike-and-shatter-guardian.svg"
+      },
+      {
+        rarity: "legendary",
+        name: "Повелитель осколков",
+        description: "Легендарный боец превращает любой кристалл в сияющий дождь осколков.",
+        cover: "assets/strike-and-shatter-shattermaster.svg"
+      }
+    ],
+    screenshots: [],
+    short: "Бей по кристаллам, разбивай преграды и собирай самые редкие осколки.",
+    description: "Strike and Shatter — аркадная игра о точных ударах и хрупких кристаллах. Разбивай препятствия, собирай осколки и открывай новых бойцов. Игра пока готовится к выходу.",
+    features: [
+      "Аркадные испытания на точность",
+      "Кристаллические преграды и яркие осколки",
+      "Коллекция бойцов и наград"
+    ]
   }
 ];

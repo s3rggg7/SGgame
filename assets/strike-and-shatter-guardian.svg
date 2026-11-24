@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520">
+  <defs>
+    <linearGradient id="bg" x2="0.8" y2="1">
+      <stop stop-color="#282342"/>
+      <stop offset="1" stop-color="#111820"/>
+    </linearGradient>
+    <linearGradient id="armor" x2="1" y2="1">
+      <stop stop-color="#d8caff"/>
+      <stop offset=".5" stop-color="#8b75d5"/>
+      <stop offset="1" stop-color="#3c367a"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="520" rx="26" fill="url(#bg)"/>
+  <circle cx="200" cy="242" r="142" fill="#a88fff" opacity=".13"/>
+  <path d="m200 92 79 74-20 120-59 70-59-70-20-120z" fill="url(#armor)" stroke="#eee8ff" stroke-width="6"/>
+  <path d="m122 161-43 45 56 13m143-58 43 45-56 13M141 286l-42 51 84-19m76-32 42 51-84-19" fill="none" stroke="#a9faff" stroke-width="12" stroke-linejoin="round"/>
+  <path d="m153 184 47-37 47 37-9 68-38 44-38-44z" fill="#25233e" stroke="#ded5ff" stroke-width="5"/>
+  <path d="m164 212 24 8m24 0 24-8" stroke="#8ff8ff" stroke-width="10" stroke-linecap="round"/>
+  <path d="m200 92v55m-59 139 59-34 59 34m-59-34v104" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="5"/>
+  <text x="200" y="440" fill="#fff" font-family="Arial,sans-serif" font-size="24" font-weight="800" text-anchor="middle" letter-spacing="2">КРИСТАЛЬНЫЙ</text>
+  <text x="200" y="472" fill="#c6b8ff" font-family="Arial,sans-serif" font-size="22" font-weight="800" text-anchor="middle" letter-spacing="4">СТРАЖ</text>
+  <text x="200" y="497" fill="#d9d3ff" font-family="Arial,sans-serif" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="3">STRIKE AND SHATTER</text>
+</svg>
