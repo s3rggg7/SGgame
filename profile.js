@@ -89,6 +89,31 @@ function renderOwnedCards(cards) {
   `).join("");
 }
 
+async function prepareAvatar(file) {
+  const bitmap = await createImageBitmap(file);
+  try {
+    const canvas = document.createElement("canvas");
+    const size = 256;
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("avatar_canvas_unavailable");
+
+    const scale = Math.min(size / bitmap.width, size / bitmap.height);
+    const width = Math.round(bitmap.width * scale);
+    const height = Math.round(bitmap.height * scale);
+    context.drawImage(bitmap, (size - width) / 2, (size - height) / 2, width, height);
+
+    const optimizedAvatar = await new Promise(resolve => {
+      canvas.toBlob(resolve, "image/webp", 0.82);
+    });
+    if (!optimizedAvatar) throw new Error("avatar_processing_failed");
+    return optimizedAvatar;
+  } finally {
+    bitmap.close();
+  }
+}
+
 async function loadProfile(nextSession) {
   session = nextSession;
   if (!nextSession) {
@@ -133,7 +158,7 @@ async function loadProfile(nextSession) {
     profileNickname.textContent = data.nickname;
     profileNicknameInput.value = data.nickname;
     profileAvatarLetter.textContent = Array.from(data.nickname)[0].toLocaleUpperCase("ru");
-    profileAvatarLetter.hidden = false;
+    profileAvatarLetter.hidden = Boolean(data.avatar_path);
     profileAvatarImage.hidden = true;
     profileAvatarImage.removeAttribute("src");
     profileAvatar.style.setProperty("--avatar-hue", String(data.nickname.codePointAt(0) % 360));
@@ -145,18 +170,46 @@ async function loadProfile(nextSession) {
     profileAvatarStatus.textContent = "";
     if (currentAvatarPath) {
       try {
-        const { data: avatarData, error: avatarError } = await supabaseClient
-          .storage.from(avatarBucket)
-          .createSignedUrl(currentAvatarPath, 3600);
-        if (avatarError) throw avatarError;
+        const avatarCache = window.SGAvatarCache;
+        const cachedAvatar = avatarCache?.read(nextSession.user.id);
+        let signedUrl = cachedAvatar?.avatarPath === currentAvatarPath
+          ? cachedAvatar.signedUrl
+          : null;
+        if (!signedUrl) {
+          const { data: avatarData, error: avatarError } = await supabaseClient
+            .storage.from(avatarBucket)
+            .createSignedUrl(currentAvatarPath, 3600);
+          if (avatarError) throw avatarError;
+          signedUrl = avatarData.signedUrl;
+        }
         if (session?.user.id !== nextSession.user.id) return;
-        profileAvatarImage.src = avatarData.signedUrl;
+        profileAvatarImage.src = signedUrl;
+        try {
+          await profileAvatarImage.decode();
+        } catch (error) {
+          if (!cachedAvatar || cachedAvatar.avatarPath !== currentAvatarPath) throw error;
+          avatarCache.clear(nextSession.user.id);
+          const { data: avatarData, error: avatarError } = await supabaseClient
+            .storage.from(avatarBucket)
+            .createSignedUrl(currentAvatarPath, 3600);
+          if (avatarError) throw avatarError;
+          profileAvatarImage.src = avatarData.signedUrl;
+          await profileAvatarImage.decode();
+          avatarCache?.write(nextSession.user.id, data.nickname, currentAvatarPath, avatarData.signedUrl);
+        }
+        if (session?.user.id !== nextSession.user.id) return;
         profileAvatarImage.hidden = false;
         profileAvatarLetter.hidden = true;
+        if (!cachedAvatar || cachedAvatar.avatarPath !== currentAvatarPath) {
+          avatarCache?.write(nextSession.user.id, data.nickname, currentAvatarPath, signedUrl);
+        }
       } catch (avatarError) {
         console.error("Не удалось загрузить аватар профиля.", avatarError);
+        profileAvatarLetter.hidden = false;
         profileAvatarStatus.textContent = "Не удалось загрузить аватар.";
       }
+    } else {
+      window.SGAvatarCache?.clear(nextSession.user.id);
     }
     renderOwnedCards(data.cards);
     profileStatus.textContent = "";
@@ -209,11 +262,12 @@ profileAvatarInput.addEventListener("change", async () => {
   profileAvatarStatus.textContent = "Загружаю аватар...";
   let uploaded = false;
   try {
+    const optimizedAvatar = await prepareAvatar(file);
     const { error: uploadError } = await supabaseClient.storage
       .from(avatarBucket)
-      .upload(avatarPath, file, {
+      .upload(avatarPath, optimizedAvatar, {
         cacheControl: "3600",
-        contentType: file.type,
+        contentType: optimizedAvatar.type,
         upsert: true
       });
     if (uploadError) throw uploadError;
@@ -224,8 +278,10 @@ profileAvatarInput.addEventListener("change", async () => {
     });
     if (profileError) throw profileError;
 
+    window.SGAvatarCache?.clear(session.user.id);
     currentAvatarPath = avatarPath;
     const profileLoaded = await loadProfile(session);
+    window.dispatchEvent(new Event("sg-game-avatar-updated"));
     profileAvatarStatus.textContent = profileLoaded
       ? "Аватар обновлён."
       : "Аватар сохранён, но профиль не обновился. Обнови страницу.";
@@ -241,9 +297,11 @@ profileAvatarInput.addEventListener("change", async () => {
         console.error("Не удалось удалить несохранённый аватар.", cleanupError);
       }
     }
-    profileAvatarStatus.textContent = /bucket|row.level security|policy|set_sg_game_avatar/i.test(error.message || "")
-      ? "Хранилище аватаров ещё не настроено. Выполни новую SQL-миграцию."
-      : "Не удалось сохранить аватар. Проверь подключение и попробуй снова.";
+    profileAvatarStatus.textContent = error.message === "avatar_canvas_unavailable" || error.message === "avatar_processing_failed"
+      ? "Не удалось обработать изображение. Попробуй выбрать другую картинку."
+      : /bucket|row.level security|policy|set_sg_game_avatar/i.test(error.message || "")
+        ? "Хранилище аватаров ещё не настроено. Выполни новую SQL-миграцию."
+        : "Не удалось сохранить аватар. Проверь подключение и попробуй снова.";
   } finally {
     profileAvatarInput.value = "";
     profileAvatarChoose.disabled = false;
@@ -264,8 +322,10 @@ profileAvatarRemove.addEventListener("click", async () => {
     });
     if (profileError) throw profileError;
 
+    window.SGAvatarCache?.clear(session.user.id);
     currentAvatarPath = null;
     await loadProfile(session);
+    window.dispatchEvent(new Event("sg-game-avatar-updated"));
     const { error: removeError } = await supabaseClient.storage
       .from(avatarBucket)
       .remove([avatarPath]);
