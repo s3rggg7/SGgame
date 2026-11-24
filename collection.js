@@ -3,9 +3,22 @@ const openChestButton = document.querySelector("#open-chest");
 const cardDialog = document.querySelector("#card-dialog");
 const cardDialogContent = document.querySelector("#card-dialog-content");
 const collectionSort = document.querySelector(".collection-sort");
+const accountDialog = document.querySelector("#account-dialog");
+const accountForm = document.querySelector("#account-form");
+const accountMessage = document.querySelector("#account-message");
+const accountSubmit = document.querySelector("#account-submit");
+const accountModeToggle = document.querySelector("#account-mode-toggle");
+const accountOpenButton = document.querySelector("#account-open");
+const accountSignoutButton = document.querySelector("#account-signout");
+const accountEmail = document.querySelector("#account-email");
+const supabaseClient = window.supabase && window.SG_SUPABASE_CONFIG
+  ? window.supabase.createClient(
+    window.SG_SUPABASE_CONFIG.url,
+    window.SG_SUPABASE_CONFIG.publishableKey
+  )
+  : null;
 
 if (collectionGrid && openChestButton) {
-  const storageKey = "sg-games-card-collection";
   const coinCount = document.querySelector("#coin-count");
   const cardTotal = document.querySelector("#card-total");
   const chestStatus = document.querySelector("#chest-status");
@@ -36,64 +49,128 @@ if (collectionGrid && openChestButton) {
     };
   }));
   const today = new Date();
-  const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-  let collection = null;
+  const todayKey = today.toISOString().slice(0, 10);
+  let collection = { coins: 0, cards: {}, lastChest: null };
+  let session = null;
+  let profileReady = false;
+  let pendingChestOpen = false;
+  let authMode = "signin";
 
-  function isValidChest(chest) {
-    if (chest === null) return true;
-    if (!chest || typeof chest !== "object" || typeof chest.date !== "string") return false;
-    if (chest.type === "card") {
-      return typeof chest.cardId === "string" || GAMES.some(game => game.id === chest.gameId);
+  {
+    let sortMode = "collection";
+
+    function setAccountMessage(message, isError = false) {
+      accountMessage.textContent = message;
+      accountMessage.classList.toggle("is-error", isError);
     }
-    return chest.type === "coins" && Number.isSafeInteger(chest.amount) && chest.amount > 0;
-  }
 
-  function normalizeChest(chest) {
-    if (chest?.type !== "card" || chest.cardId) return chest;
-    return { ...chest, cardId: `${chest.gameId}-common`, rarity: "common" };
-  }
+    function setAuthMode(mode) {
+      authMode = mode;
+      accountSubmit.textContent = mode === "signup" ? "Создать аккаунт" : "Войти";
+      accountModeToggle.textContent = mode === "signup" ? "Уже есть аккаунт? Войти" : "Создать аккаунт";
+      document.querySelector("#account-form-password").autocomplete = mode === "signup" ? "new-password" : "current-password";
+      setAccountMessage("");
+    }
 
-  try {
-    const saved = localStorage.getItem(storageKey);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (
-        !parsed ||
-        !Number.isSafeInteger(parsed.coins) ||
-        parsed.coins < 0 ||
-        !parsed.cards ||
-        typeof parsed.cards !== "object" ||
-        Array.isArray(parsed.cards) ||
-        !Object.values(parsed.cards).every(count => Number.isSafeInteger(count) && count >= 0) ||
-        !isValidChest(parsed.lastChest ?? null)
-      ) {
-        throw new Error("Сохранённые данные коллекции имеют неверный формат.");
+    function openAccountDialog(message = "Войди или создай аккаунт, чтобы открыть сундук.") {
+      setAuthMode("signin");
+      setAccountMessage(message);
+      if (!accountDialog.open) accountDialog.showModal();
+      document.querySelector("#account-form-email").focus();
+    }
+
+    function resetGuestCollection() {
+      collection = { coins: 0, cards: {}, lastChest: null };
+      profileReady = false;
+      renderCards();
+      openChestButton.disabled = false;
+      chestStatus.classList.remove("is-open");
+      chestStatus.textContent = "Войди или создай аккаунт, чтобы открыть сундук.";
+      chestResult.replaceChildren();
+      chestScene.classList.remove("is-open", "is-opening");
+    }
+
+    async function loadAccountCollection(nextSession) {
+      session = nextSession;
+      profileReady = false;
+      accountEmail.textContent = nextSession?.user.email ?? "Гость";
+      accountOpenButton.hidden = Boolean(nextSession);
+      accountSignoutButton.hidden = !nextSession;
+
+      if (!nextSession) {
+        resetGuestCollection();
+        return;
       }
 
-      const normalizedCards = {};
-      Object.entries(parsed.cards).forEach(([id, count]) => {
-        const cardId = cards.some(card => card.id === id) || !GAMES.some(game => game.id === id)
-          ? id
-          : `${id}-common`;
-        normalizedCards[cardId] = (normalizedCards[cardId] ?? 0) + count;
-      });
-      collection = {
-        coins: parsed.coins,
-        cards: normalizedCards,
-        lastChest: normalizeChest(parsed.lastChest ?? null)
-      };
-    } else {
       collection = { coins: 0, cards: {}, lastChest: null };
-    }
-  } catch (error) {
-    console.error("Не удалось загрузить коллекцию.", error);
-    openChestButton.disabled = true;
-    chestStatus.textContent = "Не удалось загрузить коллекцию. Проверь хранилище браузера.";
-    collectionGrid.textContent = "Коллекция сейчас недоступна.";
-  }
+      renderCards();
+      chestResult.replaceChildren();
+      chestScene.classList.remove("is-open", "is-opening");
+      openChestButton.disabled = true;
+      chestStatus.classList.remove("is-open");
+      chestStatus.textContent = "Загружаю коллекцию аккаунта...";
+      let data;
+      let error;
+      try {
+        ({ data, error } = await supabaseClient
+          .from("sg_game_profiles")
+          .select("coins,cards,last_chest")
+          .eq("id", nextSession.user.id)
+          .single());
+      } catch (requestError) {
+        console.error("Не удалось загрузить коллекцию аккаунта.", requestError);
+        chestStatus.textContent = "Не удалось связаться с сервером. Проверь интернет и попробуй снова.";
+        setAccountMessage("Не удалось загрузить коллекцию. Проверь подключение и настройки Supabase.", true);
+        return;
+      }
+      if (session?.user.id !== nextSession.user.id) return;
+      if (error) {
+        console.error("Не удалось загрузить коллекцию аккаунта.", error);
+        chestStatus.textContent = "Не удалось загрузить прогресс. Проверь настройку базы аккаунтов.";
+        setAccountMessage("База аккаунтов ещё не настроена. Выполни SQL-файл из папки supabase.", true);
+        return;
+      }
+      if (
+        !Number.isSafeInteger(data.coins) ||
+        data.coins < 0 ||
+        !data.cards ||
+        typeof data.cards !== "object" ||
+        Array.isArray(data.cards) ||
+        !Object.values(data.cards).every(count => Number.isSafeInteger(count) && count >= 0)
+      ) {
+        console.error("Профиль аккаунта содержит некорректные данные.");
+        chestStatus.textContent = "В профиле обнаружены некорректные данные коллекции.";
+        return;
+      }
 
-  if (collection) {
-    let sortMode = "collection";
+      collection = { coins: data.coins, cards: data.cards, lastChest: data.last_chest };
+      profileReady = true;
+      renderCards();
+      showDailyReward();
+      if (collection.lastChest?.date !== todayKey) {
+        openChestButton.disabled = false;
+        chestStatus.classList.remove("is-open");
+        chestStatus.textContent = "Можно открыть один сундук сегодня.";
+      }
+      if (accountDialog.open) accountDialog.close();
+      if (pendingChestOpen) {
+        pendingChestOpen = false;
+        await openDailyChest();
+      }
+    }
+
+    function handleAuthError(error) {
+      const knownMessages = {
+        daily_chest_already_opened: "Сундук уже открыт сегодня.",
+        authentication_required: "Войди в аккаунт, чтобы продолжить.",
+        profile_not_found: "Профиль не найден. Попробуй выйти и войти снова.",
+        invalid_card: "Эта карточка больше недоступна.",
+        not_enough_sg_bucks: "Не хватает SG-баксов."
+      };
+      if (error instanceof TypeError) return "Не удалось связаться с сервером. Проверь интернет и попробуй снова.";
+      return knownMessages[error.message] || error.message || "Произошла ошибка. Попробуй ещё раз.";
+    }
+
     function triggerCelebration(target) {
       target.classList.remove("celebrate");
       void target.offsetWidth;
@@ -191,6 +268,8 @@ if (collectionGrid && openChestButton) {
     function renderCardDetails(card, message = "") {
       const count = collection.cards[card.id] ?? 0;
       const canAfford = collection.coins >= card.price;
+      const needsLogin = !session;
+      const loadingProfile = Boolean(session) && !profileReady;
       cardDialogContent.innerHTML = `
         <div class="card-detail rarity-${card.rarity.id}">
           <div class="card-detail-art">
@@ -207,11 +286,11 @@ if (collectionGrid && openChestButton) {
                 <span>Цена карточки</span>
                 <strong><span class="sg-bucks-mark small" aria-hidden="true">SG</span> ${card.price}</strong>
               </div>
-              <button class="buy-card-button" id="buy-card" type="button" ${canAfford ? "" : "disabled"}>
+              <button class="buy-card-button" id="buy-card" type="button" ${loadingProfile || (session && !canAfford) ? "disabled" : ""}>
                 <span aria-hidden="true">🛒</span>
-                <span>${canAfford ? `Купить${count > 0 ? " ещё" : ""} карточку` : "Не хватает SG-баксов"}</span>
+                <span>${needsLogin ? "Войти, чтобы купить" : loadingProfile ? "Загрузка баланса..." : canAfford ? `Купить${count > 0 ? " ещё" : ""} карточку` : "Не хватает SG-баксов"}</span>
               </button>
-              <p class="purchase-status ${message.includes("успешно") ? "is-success" : ""}" id="purchase-status" aria-live="polite">${message || (canAfford ? "" : `Не хватает ${card.price - collection.coins} SG-баксов.`)}</p>
+              <p class="purchase-status ${message.includes("успешно") ? "is-success" : ""}" id="purchase-status" aria-live="polite">${message || (needsLogin ? "Войди в аккаунт, чтобы покупать карточки." : loadingProfile || canAfford ? "" : `Не хватает ${card.price - collection.coins} SG-баксов.`)}</p>
             </div>
           </div>
         </div>`;
@@ -225,29 +304,34 @@ if (collectionGrid && openChestButton) {
       cardDialog.showModal();
     }
 
-    function buyCard(card) {
+    async function buyCard(card) {
+      if (!session) {
+        openAccountDialog("Войди или создай аккаунт, чтобы покупать карточки.");
+        return;
+      }
+      if (!profileReady) {
+        renderCardDetails(card, "Подожди, пока загрузится коллекция аккаунта.");
+        return;
+      }
       if (collection.coins < card.price) {
         renderCardDetails(card, `Не хватает ${card.price - collection.coins} SG-баксов.`);
         return;
       }
 
-      const nextCollection = {
-        ...collection,
-        coins: collection.coins - card.price,
-        cards: { ...collection.cards, [card.id]: (collection.cards[card.id] ?? 0) + 1 }
-      };
+      const buyButton = cardDialogContent.querySelector("#buy-card");
+      buyButton.disabled = true;
       try {
-        localStorage.setItem(storageKey, JSON.stringify(nextCollection));
+        const { data, error } = await supabaseClient.rpc("buy_sg_game_card", { p_card_id: card.id });
+        if (error) throw error;
+
+        collection = { coins: data.coins, cards: data.cards, lastChest: data.last_chest };
+        renderCards();
+        renderCardDetails(card, `Покупка прошла успешно. Теперь у тебя ×${collection.cards[card.id]}.`);
+        triggerCelebration(cardDialogContent.querySelector(".card-buy-panel"));
       } catch (error) {
         console.error("Не удалось купить карточку.", error);
-        renderCardDetails(card, "Не удалось сохранить покупку. Проверь хранилище браузера.");
-        return;
+        renderCardDetails(card, handleAuthError(error));
       }
-
-      collection = nextCollection;
-      renderCards();
-      renderCardDetails(card, `Покупка прошла успешно. Теперь у тебя ×${collection.cards[card.id]}.`);
-      triggerCelebration(cardDialogContent.querySelector(".card-buy-panel"));
     }
 
     document.querySelector("#card-dialog-close").addEventListener("click", () => cardDialog.close());
@@ -379,53 +463,133 @@ if (collectionGrid && openChestButton) {
     renderCards();
     showDailyReward();
 
-    openChestButton.addEventListener("click", () => {
+    async function openDailyChest() {
+      if (!session) {
+        pendingChestOpen = true;
+        openAccountDialog();
+        return;
+      }
+      if (!profileReady) {
+        chestStatus.textContent = "Коллекция аккаунта ещё загружается.";
+        return;
+      }
       if (collection.lastChest?.date === todayKey) return;
 
-      let reward;
-      const rewardRoll = Math.random() * 100;
-      if (GAMES.length > 0 && rewardRoll < 60) {
-        const game = GAMES[Math.floor(Math.random() * GAMES.length)];
-        const rarity = rewardRoll < 30 ? rarities[0] : rewardRoll < 50 ? rarities[1] : rarities[2];
-        reward = { date: todayKey, type: "card", gameId: game.id, cardId: `${game.id}-${rarity.id}`, rarity: rarity.id };
-      } else {
-        reward = { date: todayKey, type: "coins", amount: Math.floor(Math.random() * 21) + 10 };
-      }
-
-      const nextCollection = {
-        coins: collection.coins + (reward.type === "coins" ? reward.amount : 0),
-        cards: reward.type === "card"
-          ? { ...collection.cards, [reward.cardId]: (collection.cards[reward.cardId] ?? 0) + 1 }
-          : collection.cards,
-        lastChest: reward
-      };
-
+      openChestButton.disabled = true;
       try {
-        localStorage.setItem(storageKey, JSON.stringify(nextCollection));
+        const { data, error } = await supabaseClient.rpc("open_daily_chest");
+        if (error) throw error;
+
+        const reward = data.reward;
+        collection = { coins: data.coins, cards: data.cards, lastChest: data.last_chest };
+        chestResult.replaceChildren();
+        chestStatus.textContent = "Сундук дрожит и открывается...";
+        chestStatus.classList.remove("is-open");
+        chestScene.classList.remove("is-open");
+        chestScene.classList.add("is-opening");
+        triggerCelebration(chestScene);
+        const animationDelay = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ? 50 : 1100;
+        window.setTimeout(() => {
+          chestScene.classList.remove("is-opening");
+          chestScene.classList.add("is-open");
+          chestStatus.textContent = "Сундук открыт";
+          chestStatus.classList.add("is-open");
+          renderReward(reward, true, () => {
+            renderCards();
+          });
+        }, animationDelay);
       } catch (error) {
-        console.error("Не удалось сохранить награду сундука.", error);
-        chestStatus.textContent = "Не удалось сохранить награду. Проверь хранилище браузера и попробуй снова.";
+        console.error("Не удалось открыть сундук.", error);
+        chestStatus.textContent = handleAuthError(error);
+        openChestButton.disabled = false;
+      }
+    }
+
+    accountOpenButton.addEventListener("click", () => openAccountDialog());
+    accountSignoutButton.addEventListener("click", async () => {
+      accountSignoutButton.disabled = true;
+      try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+      } catch (error) {
+        console.error("Не удалось выйти из аккаунта.", error);
+        chestStatus.textContent = handleAuthError(error);
+      } finally {
+        accountSignoutButton.disabled = false;
+      }
+    });
+    accountModeToggle.addEventListener("click", () => {
+      setAuthMode(authMode === "signin" ? "signup" : "signin");
+    });
+    document.querySelector("#account-dialog-close").addEventListener("click", () => {
+      accountDialog.close();
+      pendingChestOpen = false;
+    });
+    accountDialog.addEventListener("click", event => {
+      if (event.target === accountDialog) {
+        accountDialog.close();
+        pendingChestOpen = false;
+      }
+    });
+    accountForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!supabaseClient) {
+        setAccountMessage("Не удалось подключиться к сервису аккаунтов.", true);
         return;
       }
 
-      collection = nextCollection;
-      openChestButton.disabled = true;
-      chestResult.replaceChildren();
-      chestStatus.textContent = "Сундук дрожит и открывается...";
-      chestStatus.classList.remove("is-open");
-      chestScene.classList.remove("is-open");
-      chestScene.classList.add("is-opening");
-      triggerCelebration(chestScene);
-      const animationDelay = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ? 50 : 1100;
-      window.setTimeout(() => {
-        chestScene.classList.remove("is-opening");
-        chestScene.classList.add("is-open");
-        chestStatus.textContent = "Сундук открыт";
-        chestStatus.classList.add("is-open");
-        renderReward(reward, true, () => {
-          renderCards();
-        });
-      }, animationDelay);
+      accountSubmit.disabled = true;
+      accountModeToggle.disabled = true;
+      setAccountMessage(authMode === "signup" ? "Создаю аккаунт..." : "Выполняю вход...");
+      const email = document.querySelector("#account-form-email").value.trim();
+      const password = document.querySelector("#account-form-password").value;
+      try {
+        const result = authMode === "signup"
+          ? await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: { emailRedirectTo: `${window.location.origin}${window.location.pathname}` }
+          })
+          : await supabaseClient.auth.signInWithPassword({ email, password });
+        if (result.error) throw result.error;
+        if (authMode === "signup" && !result.data.session) {
+          accountForm.reset();
+          setAccountMessage("Проверь почту и подтверди адрес, затем войди в аккаунт.");
+        } else {
+          setAccountMessage("Вход выполнен. Загружаю коллекцию...");
+        }
+      } catch (error) {
+        console.error("Не удалось выполнить действие с аккаунтом.", error);
+        setAccountMessage(handleAuthError(error), true);
+      } finally {
+        accountSubmit.disabled = false;
+        accountModeToggle.disabled = false;
+      }
     });
+    openChestButton.addEventListener("click", openDailyChest);
+
+    if (!supabaseClient) {
+      openChestButton.disabled = true;
+      chestStatus.textContent = "Сервис аккаунтов не настроен.";
+      setAccountMessage("Не удалось подключиться к сервису аккаунтов.", true);
+      accountOpenButton.disabled = true;
+    } else {
+      supabaseClient.auth.onAuthStateChange((_event, nextSession) => {
+        window.setTimeout(() => loadAccountCollection(nextSession), 0);
+      });
+      supabaseClient.auth.getSession().then(({ data, error }) => {
+        if (error) {
+          console.error("Не удалось проверить сессию аккаунта.", error);
+          chestStatus.textContent = "Не удалось проверить вход. Обнови страницу.";
+          openChestButton.disabled = true;
+          return;
+        }
+        return loadAccountCollection(data.session);
+      }).catch(error => {
+        console.error("Не удалось загрузить сессию аккаунта.", error);
+        chestStatus.textContent = "Не удалось загрузить аккаунт. Обнови страницу.";
+        openChestButton.disabled = true;
+      });
+    }
   }
 }

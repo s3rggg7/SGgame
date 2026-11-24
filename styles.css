@@ -286,6 +286,24 @@ button { font: inherit; }
   color: #f0c77e;
   font-weight: 800;
 }
+.collection-account { display: flex; flex: 0 1 260px; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+.account-email { max-width: 100%; overflow: hidden; color: var(--muted); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.account-button {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid rgba(240, 199, 126, .4);
+  border-radius: 999px;
+  background: rgba(240, 199, 126, .1);
+  color: #ffe2aa;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+.account-button:hover:not(:disabled) { transform: translateY(-1px); background: rgba(240, 199, 126, .2); }
+.account-button:focus-visible, .account-mode-toggle:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+.account-button:disabled { cursor: wait; opacity: .6; }
+.account-signout { border-color: var(--line); background: transparent; color: var(--muted); }
 .sg-bucks-mark {
   width: 26px;
   height: 26px;
@@ -631,6 +649,41 @@ button { font: inherit; }
 }
 .card-dialog::backdrop { background: rgba(0, 0, 0, .74); backdrop-filter: blur(5px); }
 .card-dialog[open] { animation: reward-appear .25s ease-out both; }
+.account-dialog {
+  position: relative;
+  width: min(460px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #202329;
+  color: var(--text);
+}
+.account-dialog::backdrop { background: rgba(0, 0, 0, .74); backdrop-filter: blur(5px); }
+.account-dialog[open] { animation: reward-appear .25s ease-out both; }
+.account-dialog-content { padding: 38px; }
+.account-dialog-content h2 { margin: 8px 40px 10px 0; font-size: 28px; line-height: 1.15; }
+.account-intro { margin: 0 0 24px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+#account-form { display: grid; gap: 14px; }
+.account-field { display: grid; gap: 7px; color: #d3d5d9; font-size: 13px; font-weight: 700; }
+.account-field input {
+  min-height: 46px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  outline: none;
+  background: #17191d;
+  color: var(--text);
+  font: inherit;
+}
+.account-field input:focus { border-color: #f0c77e; box-shadow: 0 0 0 3px rgba(240, 199, 126, .12); }
+.account-submit { min-height: 48px; margin-top: 5px; background: #f0c77e; color: #24201a; }
+.account-submit:hover:not(:disabled) { background: #ffda98; }
+.account-mode-toggle { justify-self: center; padding: 5px 10px; border: 0; background: transparent; color: #f0c77e; font: inherit; cursor: pointer; }
+.account-mode-toggle:disabled { cursor: wait; opacity: .6; }
+.account-message { min-height: 1.4em; margin: 14px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.account-message.is-error { color: #ff9a91; }
 .card-dialog-close {
   position: absolute;
   z-index: 1;
@@ -812,6 +865,7 @@ footer {
   .hero-actions { gap: 9px; margin-top: 22px; }
   .hero-primary, .hero-secondary { min-height: 44px; padding: 0 15px; font-size: 13px; }
   .collection-hero { align-items: flex-start; flex-direction: column; padding: 62px 20px 36px; gap: 22px; }
+  .collection-account { justify-content: flex-start; }
   .daily-chest { margin: 28px 20px 0; grid-template-columns: 1fr; gap: 4px; }
   .chest-scene { justify-self: center; transform: scale(.9); }
   .collection-section { padding: 56px 20px 70px; }
@@ -823,6 +877,7 @@ footer {
   .card-detail { grid-template-columns: 1fr; }
   .card-detail-art { min-height: 220px; max-height: 320px; }
   .card-detail-copy { padding: 26px 22px 28px; }
+  .account-dialog-content { padding: 30px 22px; }
   .catalog { padding: 54px 20px 70px; }
   .catalog-head { align-items: stretch; flex-direction: column; gap: 20px; }
   .catalog-controls { justify-content: flex-start; }
