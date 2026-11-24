@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520">
+  <rect width="400" height="520" rx="26" fill="#1d2534"/>
+  <path d="M0 274 76 202l60 60 64-91 74 96 62-59 64 63v249H0z" fill="#293448"/>
+  <path d="M0 313h400v207H0z" fill="#191d2a"/>
+  <path d="M200 292v99m0 0-58 53m58-53 58 53m-58-53V520" fill="none" stroke="#d7a969" stroke-width="12" stroke-linecap="square"/>
+  <path d="M166 292h68" stroke="#ffe0a6" stroke-width="9"/>
+  <circle cx="200" cy="285" r="17" fill="#f1c97e"/>
+  <path d="M115 183h36m98 0h36M98 226h25m154 0h25" stroke="#8c88aa" stroke-width="7" stroke-linecap="round"/>
+  <text x="200" y="429" fill="#fff" font-family="Arial,sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="3">ТОЧКА</text>
+  <text x="200" y="463" fill="#e1ae67" font-family="Arial,sans-serif" font-size="22" font-weight="800" text-anchor="middle" letter-spacing="3">НЕВОЗВРАТА</text>
+  <text x="200" y="490" fill="#c1c3d0" font-family="Arial,sans-serif" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="3">STRIKE AND SHATTER</text>
+</svg>

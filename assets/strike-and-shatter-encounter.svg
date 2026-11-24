@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520">
+  <rect width="400" height="520" rx="26" fill="#17172d"/>
+  <circle cx="298" cy="111" r="44" fill="#f3e7ae"/>
+  <path d="M0 235 74 163l61 62 68-93 76 101 57-58 64 63v282H0z" fill="#26324a"/>
+  <path d="M0 282h400v238H0z" fill="#20222d"/>
+  <path d="M70 274h260" stroke="#424457" stroke-width="5"/>
+  <path d="M96 267v-84m-18 0h36l12 15H78z" fill="#252532" stroke="#090a15" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M76 196h42l-12 23H87z" fill="#ffc650" stroke="#090a15" stroke-width="7"/>
+  <path d="m96 221-33 86h67z" fill="#ffd978" opacity=".16"/>
+  <path d="M174 294v-40l17-18 19 18v40m-41 0h47m-37-15h28m40 15v-33l14-15 15 15v33m-37 0h45m-26-16h10" fill="none" stroke="#11131c" stroke-width="12" stroke-linecap="square" stroke-linejoin="miter"/>
+  <path d="M0 308h400" stroke="#090b14" stroke-width="12"/>
+  <text x="200" y="426" fill="#fff4cc" font-family="Arial,sans-serif" font-size="26" font-weight="800" text-anchor="middle" letter-spacing="3">НОЧНАЯ ВСТРЕЧА</text>
+  <text x="200" y="466" fill="#aaa6d2" font-family="Arial,sans-serif" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="4">STRIKE AND SHATTER</text>
+</svg>
